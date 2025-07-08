@@ -1,12 +1,12 @@
 'use client';
+
+// import { initializeAuthConfig } from '@polyrhythm-inc/nextjs-auth-client';
 import { useEffect } from 'react';
-import { initializeAuthConfig } from '@polyrhythm-inc/nextjs-auth-client';
 
 export default function AuthInitializer() {
   useEffect(() => {
-    initializeAuthConfig({
-      enableDebugLog: process.env.NODE_ENV === 'development'
-    });
+    // Simplified initialization for Heroku deployment
+    console.log('AuthInitializer loaded');
   }, []);
 
   return null;
