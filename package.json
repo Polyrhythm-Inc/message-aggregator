@@ -1,0 +1,14 @@
+{
+  "name": "message-aggregator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd src && npm run dev",
+    "build": "cd src && npm run build",
+    "start": "cd src && npm run start",
+    "postinstall": "cd src && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 
