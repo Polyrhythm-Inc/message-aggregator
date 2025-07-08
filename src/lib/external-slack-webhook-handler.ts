@@ -19,28 +19,48 @@ export const ExternalSlackWebhookHandler = {
 
       logger.info('チーム情報を取得中...', { team_id: slackWebhook.team_id });
       
-      // チーム情報の取得
-      const teamInfo = await client.team.info({
-        team: slackWebhook.team_id,
-      });
+      let host = 'workspace';
+      try {
+        // チーム情報の取得
+        const teamInfo = await client.team.info({
+          team: slackWebhook.team_id,
+        });
+        host = teamInfo.team?.domain || 'workspace';
+        logger.info('チーム情報を取得しました', { domain: host });
+      } catch (teamError) {
+        logger.warn('チーム情報の取得に失敗しました、デフォルト値を使用します', { 
+          error: teamError instanceof Error ? teamError.message : teamError 
+        });
+      }
 
       logger.info('ユーザー情報を取得中...', { user_id: slackWebhook.event.user });
 
-      // ユーザー情報の取得
-      const userInfo = await client.users.info({
-        user: slackWebhook.event.user || '',
-      });
+      let senderName = '不明なユーザー';
+      if (slackWebhook.event.user) {
+        try {
+          // ユーザー情報の取得
+          const userInfo = await client.users.info({
+            user: slackWebhook.event.user,
+          });
+          senderName = userInfo.user?.real_name || userInfo.user?.name || '不明なユーザー';
+          logger.info('ユーザー情報を取得しました', { senderName });
+        } catch (userError) {
+          logger.warn('ユーザー情報の取得に失敗しました、デフォルト値を使用します', { 
+            error: userError instanceof Error ? userError.message : userError,
+            user_id: slackWebhook.event.user
+          });
+          senderName = `ユーザー(${slackWebhook.event.user})`;
+        }
+      }
 
-      // "Hitoshi Yunoki" が含まれる場合は処理をスキップ
-      const senderName = userInfo.user?.real_name || userInfo.user?.name || '不明なユーザー';
       logger.info('送信者名を確認', { senderName });
       
+      // "Hitoshi Yunoki" が含まれる場合は処理をスキップ
       if (senderName.includes('Hitoshi Yunoki')) {
         logger.info('Hitoshi Yunokiからのメッセージをスキップします');
         return;
       }
 
-      const host = teamInfo.team?.domain;
       const messageText = SlackHelper.textInWebhook(slackWebhook);
 
       logger.info('メッセージを準備中', { host, messageText });
@@ -58,7 +78,7 @@ export const ExternalSlackWebhookHandler = {
           host,
         );
 
-      logger.info('外部Slackに送信中', { webhookUrl, messageWithLink });
+      logger.info('外部Slackに送信中', { messageWithLink });
 
       // 外部のSlackワークスペースにメッセージを送信
       const response = await fetch(webhookUrl, {
