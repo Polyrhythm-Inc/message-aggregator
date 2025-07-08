@@ -1,8 +1,41 @@
+# Message Aggregator
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Features
+
+- **Slack Event Processing**: Receive and process Slack events through webhook endpoints
+- **External Slack Integration**: Forward messages to external Slack workspaces
+- **Modern UI**: Built with Next.js and Tailwind CSS
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18 or later
+- npm or yarn
+
+### Installation
+
+1. Clone the repository and install dependencies:
+
+```bash
+npm install
+```
+
+2. Set up environment variables:
+   Create a `.env.local` file in the root directory and add:
+
+```env
+# Slack API設定
+SLACK_BOT_TOKEN=xoxb-your-bot-token-here
+EXTERNAL_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+# Node.js環境設定
+NODE_ENV=development
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
@@ -15,6 +48,43 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## API Endpoints
+
+### Slack Webhook
+
+**POST** `/api/slack/webhook`
+
+Slackイベントを受信し、外部のSlackワークスペースに転送します。
+
+- **URL検証**: `url_verification`イベントの場合、チャレンジを返します
+- **イベント処理**: `event_callback`イベントの場合、メッセージを処理して外部Slackに転送します
+
+**GET** `/api/slack/webhook`
+
+APIの動作確認用エンドポイント。
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   └── slack/
+│   │       └── webhook/
+│   │           └── route.ts          # Slack webhook endpoint
+│   ├── components/
+│   └── ...
+├── lib/
+│   ├── external-slack-webhook-handler.ts  # External Slack integration
+│   ├── slack-helper.ts                     # Slack utility functions
+│   └── logger.ts                           # Logging utility
+├── types/
+│   └── slack.ts                            # Slack type definitions
+└── ...
+```
+
+## Development
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
