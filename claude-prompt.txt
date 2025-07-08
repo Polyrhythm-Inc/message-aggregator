@@ -1,0 +1,5 @@
+nextコマンドでNextJSアプリの初期化をしてください。srcフォルダ内に作成するのが望ましいです。そして、このmdドキュメントに従って、認証しないと閲覧できないダッシュボード画面（ログアウトボタンつき）を作成してください。
+https://auth-suite.polyrhythm.tokyo/docs/package-integration-guide.md
+
+そして、以下を行ってください。
+
