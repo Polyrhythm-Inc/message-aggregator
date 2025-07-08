@@ -5,7 +5,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Features
 
 - **Slack Event Processing**: Receive and process Slack events through webhook endpoints
-- **External Slack Integration**: Forward messages to external Slack workspaces
+- **Chatwork Event Processing**: Receive and process Chatwork events through webhook endpoints
+- **External Slack Integration**: Forward messages from Slack and Chatwork to external Slack workspaces
 - **Modern UI**: Built with Next.js and Tailwind CSS
 
 ## Getting Started
@@ -30,6 +31,10 @@ npm install
 # Slack API設定
 SLACK_BOT_TOKEN=xoxb-your-bot-token-here
 EXTERNAL_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
+# Chatwork API設定
+CHATWORK_API_TOKEN=your-chatwork-api-token
+CHATWORK_WEBHOOK_API_KEY=your-webhook-api-key
 
 # Node.js環境設定
 NODE_ENV=development
@@ -64,23 +69,42 @@ Slackイベントを受信し、外部のSlackワークスペースに転送し�
 
 APIの動作確認用エンドポイント。
 
+### Chatwork Webhook
+
+**POST** `/api/chatwork/webhook`
+
+Chatworkイベントを受信し、外部のSlackワークスペースに転送します。
+
+- **認証**: `chatwork_webhook_signature`でAPIキーを検証します
+- **メッセージ処理**: Chatworkのメッセージを処理して外部Slackに転送します
+
+**GET** `/api/chatwork/webhook`
+
+APIの動作確認用エンドポイント。
+
 ## Project Structure
 
 ```
 src/
 ├── app/
 │   ├── api/
-│   │   └── slack/
+│   │   ├── slack/
+│   │   │   └── webhook/
+│   │   │       └── route.ts          # Slack webhook endpoint
+│   │   └── chatwork/
 │   │       └── webhook/
-│   │           └── route.ts          # Slack webhook endpoint
+│   │           └── route.ts          # Chatwork webhook endpoint
 │   ├── components/
 │   └── ...
 ├── lib/
-│   ├── external-slack-webhook-handler.ts  # External Slack integration
-│   ├── slack-helper.ts                     # Slack utility functions
-│   └── logger.ts                           # Logging utility
+│   ├── external-slack-webhook-handler.ts     # External Slack integration
+│   ├── chatwork-webhook-handler.ts           # Chatwork webhook handler
+│   ├── chatwork-service.ts                   # Chatwork API service
+│   ├── slack-helper.ts                       # Slack utility functions
+│   └── logger.ts                             # Logging utility
 ├── types/
-│   └── slack.ts                            # Slack type definitions
+│   ├── slack.ts                              # Slack type definitions
+│   └── chatwork.ts                           # Chatwork type definitions
 └── ...
 ```
 
