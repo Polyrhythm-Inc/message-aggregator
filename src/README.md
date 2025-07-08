@@ -15,6 +15,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 - Node.js 18 or later
 - npm or yarn
+- Heroku CLI (for deployment)
 
 ### Installation
 
@@ -53,6 +54,37 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Deployment
+
+### Heroku Environment Variables
+
+Use the provided script to set up environment variables on Heroku:
+
+```bash
+# Set environment variables from .env.local to Heroku app
+node setHerokuConfig.js [app_name]
+
+# Example:
+node setHerokuConfig.js message-aggregator
+```
+
+The script will automatically:
+- Read environment variables from `.env.local`
+- Set `CHATWORK_API_TOKEN`, `CHATWORK_WEBHOOK_API_KEY`, `SLACK_BOT_TOKEN`, and `EXTERNAL_SLACK_WEBHOOK_URL` on Heroku
+- Set `NODE_ENV` to `production`
+
+### Manual Environment Variable Setup
+
+If you prefer to set environment variables manually:
+
+```bash
+heroku config:set SLACK_BOT_TOKEN=your-token --app your-app-name
+heroku config:set EXTERNAL_SLACK_WEBHOOK_URL=your-webhook-url --app your-app-name
+heroku config:set CHATWORK_API_TOKEN=your-token --app your-app-name
+heroku config:set CHATWORK_WEBHOOK_API_KEY=your-api-key --app your-app-name
+heroku config:set NODE_ENV=production --app your-app-name
+```
 
 ## API Endpoints
 
@@ -106,6 +138,7 @@ src/
 │   ├── slack.ts                              # Slack type definitions
 │   └── chatwork.ts                           # Chatwork type definitions
 └── ...
+setHerokuConfig.js                            # Heroku environment setup script
 ```
 
 ## Development
