@@ -1,0 +1,27 @@
+{
+  "name": "message-aggregator",
+  "description": "Message Aggregator for Poly Message Aggregator",
+  "repository": "https://github.com/your-username/message-aggregator",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["node", "nextjs", "message", "aggregator"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node.js environment",
+      "value": "production"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "scripts": {
+    "postinstall": "npm run build"
+  }
+} 

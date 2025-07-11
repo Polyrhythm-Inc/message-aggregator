@@ -11,6 +11,35 @@ export type SlackEvent = {
   event_ts: string;
   thread_ts?: string;
   parent_user_id?: string;
+  // 編集メッセージの場合に含まれる情報
+  message?: {
+    type: string;
+    user: string;
+    text?: string;
+    ts: string;
+    edited?: {
+      user: string;
+      ts: string;
+    };
+    blocks?: {
+      type: string;
+      block_id: string;
+      elements?: {
+        type: string;
+        elements?: {
+          type?: string;
+          text?: string;
+          user_id?: string;
+        }[];
+      }[];
+    }[];
+  };
+  previous_message?: {
+    type: string;
+    user: string;
+    text?: string;
+    ts: string;
+  };
   blocks?: {
     type: string;
     block_id: string;

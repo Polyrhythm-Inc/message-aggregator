@@ -5,7 +5,11 @@ import { useState } from 'react';
 
 export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
-  const [authStatus, setAuthStatus] = useState<any>(null);
+  const [authStatus, setAuthStatus] = useState<{
+    isAuthenticated: boolean;
+    message?: string;
+    error?: string;
+  } | null>(null);
 
   const handleCheckAuth = async () => {
     setIsLoading(true);

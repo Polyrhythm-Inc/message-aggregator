@@ -1,0 +1,100 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: src/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd src
+          npm ci
+
+      - name: Build application
+        run: |
+          cd src
+          npm run build
+
+      - name: Deploy to Heroku
+        uses: akhileshns/heroku-deploy@v3.12.14
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          appdir: "src"
+
+      - name: Record deployment success
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.DEPLOYMENT_API_URL }}/api/external/deployments" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "applicationName": "${{ github.event.repository.name }}",
+              "environment": "${{ github.event.inputs.environment || 'production' }}",
+              "version": "${{ github.ref_name }}",
+              "commitHash": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "tag": "${{ github.ref_name }}",
+              "deployedBy": "github-actions",
+              "status": "SUCCESS",
+              "workflowRunId": "${{ github.run_id }}",
+              "jobId": "${{ github.job }}",
+              "notes": "Heroku deployment via GitHub Actions",
+              "metadata": {
+                "repository": "${{ github.repository }}",
+                "actor": "${{ github.actor }}",
+                "platform": "heroku",
+                "appName": "${{ secrets.HEROKU_APP_NAME }}"
+              }
+            }'
+
+      - name: Record deployment failure
+        if: failure()
+        run: |
+          curl -X POST "${{ secrets.DEPLOYMENT_API_URL }}/api/external/deployments" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "applicationName": "${{ github.event.repository.name }}",
+              "environment": "${{ github.event.inputs.environment || 'production' }}",
+              "version": "${{ github.ref_name }}",
+              "commitHash": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "tag": "${{ github.ref_name }}",
+              "deployedBy": "github-actions",
+              "status": "FAILED",
+              "workflowRunId": "${{ github.run_id }}",
+              "jobId": "${{ github.job }}",
+              "notes": "Heroku deployment failed via GitHub Actions",
+              "metadata": {
+                "repository": "${{ github.repository }}",
+                "actor": "${{ github.actor }}",
+                "platform": "heroku",
+                "appName": "${{ secrets.HEROKU_APP_NAME }}"
+              }
+            }' 

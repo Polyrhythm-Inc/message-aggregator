@@ -33,23 +33,57 @@ export const ExternalSlackWebhookHandler = {
         });
       }
 
-      logger.info('ユーザー情報を取得中...', { user_id: slackWebhook.event.user });
+      // 編集メッセージの場合とそうでない場合の処理を分岐
+      let actualUser: string | undefined;
+      let actualText: string | undefined;
+      let actualTs: string;
+      
+      if (slackWebhook.event.subtype === 'message_changed' && slackWebhook.event.message) {
+        // 編集メッセージの場合
+        const message = slackWebhook.event.message;
+        actualUser = message.user;
+        actualText = message.text;
+        actualTs = message.ts;
+        logger.info('編集メッセージを検出しました', { 
+          user: actualUser, 
+          text: actualText,
+          ts: actualTs 
+        });
+      } else {
+        // 通常のメッセージの場合
+        actualUser = slackWebhook.event.user;
+        actualText = slackWebhook.event.text;
+        actualTs = slackWebhook.event.ts;
+        logger.info('通常のメッセージを検出しました', { 
+          user: actualUser, 
+          text: actualText,
+          ts: actualTs 
+        });
+      }
+
+      // メンバーIDがU031ZRTQYの場合は転送しない
+      if (actualUser === 'U031ZRTQY') {
+        logger.info('指定されたメンバーIDのメッセージをスキップします', { user: actualUser });
+        return;
+      }
+
+      logger.info('ユーザー情報を取得中...', { user_id: actualUser });
 
       let senderName = '不明なユーザー';
-      if (slackWebhook.event.user) {
+      if (actualUser) {
         try {
           // ユーザー情報の取得
           const userInfo = await client.users.info({
-            user: slackWebhook.event.user,
+            user: actualUser,
           });
           senderName = userInfo.user?.real_name || userInfo.user?.name || '不明なユーザー';
           logger.info('ユーザー情報を取得しました', { senderName });
         } catch (userError) {
           logger.warn('ユーザー情報の取得に失敗しました、デフォルト値を使用します', { 
             error: userError instanceof Error ? userError.message : userError,
-            user_id: slackWebhook.event.user
+            user_id: actualUser
           });
-          senderName = `ユーザー(${slackWebhook.event.user})`;
+          senderName = `ユーザー(${actualUser})`;
         }
       }
 
@@ -61,19 +95,27 @@ export const ExternalSlackWebhookHandler = {
         return;
       }
 
-      const messageText = SlackHelper.textInWebhook(slackWebhook);
+      // メッセージテキストの取得（編集メッセージの場合は実際のテキストを使用）
+      let messageText = actualText || '';
+      if (!messageText) {
+        // テキストが取得できない場合は、SlackHelperを使用してフォールバック
+        messageText = SlackHelper.textInWebhook(slackWebhook);
+      }
 
       logger.info('メッセージを準備中', { host, messageText });
 
+      // 編集メッセージの場合は「編集済み」を追加
+      const messagePrefix = slackWebhook.event.subtype === 'message_changed' ? '【編集済み】' : '';
+      
       // 送信者名を含めたメッセージを作成
-      const messageWithSender = `${senderName}さんからのメッセージ:\n${messageText}`;
+      const messageWithSender = `${messagePrefix}${senderName}さんからのメッセージ:\n${messageText}`;
 
       const messageWithLink =
         messageWithSender +
         '\n' +
         SlackHelper.buildUrl(
           slackWebhook.event.channel,
-          slackWebhook.event.ts,
+          actualTs,
           slackWebhook.event.thread_ts,
           host,
         );

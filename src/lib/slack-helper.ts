@@ -44,7 +44,6 @@ export const SlackHelper = {
     let url = `https://${domain}.slack.com/archives/${channelId}/p${timestamp}`;
     
     if (thread_ts) {
-      const threadTimestamp = thread_ts.replace('.', '');
       url += `?thread_ts=${thread_ts}&cid=${channelId}`;
     }
     
