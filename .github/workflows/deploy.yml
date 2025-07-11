@@ -48,9 +48,13 @@ jobs:
           heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           appdir: "src"
+          team: "polyrhythm-inc"
 
       - name: Record deployment success
-        if: success()
+        if: success() && env.DEPLOYMENT_API_URL && env.DEPLOYMENT_API_KEY
+        env:
+          DEPLOYMENT_API_URL: ${{ secrets.DEPLOYMENT_API_URL }}
+          DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
         run: |
           curl -X POST "${{ secrets.DEPLOYMENT_API_URL }}/api/external/deployments" \
             -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
@@ -76,7 +80,10 @@ jobs:
             }'
 
       - name: Record deployment failure
-        if: failure()
+        if: failure() && env.DEPLOYMENT_API_URL && env.DEPLOYMENT_API_KEY
+        env:
+          DEPLOYMENT_API_URL: ${{ secrets.DEPLOYMENT_API_URL }}
+          DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
         run: |
           curl -X POST "${{ secrets.DEPLOYMENT_API_URL }}/api/external/deployments" \
             -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
