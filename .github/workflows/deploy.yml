@@ -64,7 +64,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "applicationName": "${{ github.event.repository.name }}",
+              "applicationName": "message-aggregator.polyrhythm.tokyo",
               "environment": "${{ github.event.inputs.environment || 'production' }}",
               "version": "${{ github.ref_name }}",
               "commitHash": "${{ github.sha }}",
@@ -93,7 +93,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "applicationName": "${{ github.event.repository.name }}",
+              "applicationName": "message-aggregator.polyrhythm.tokyo",
               "environment": "${{ github.event.inputs.environment || 'production' }}",
               "version": "${{ github.ref_name }}",
               "commitHash": "${{ github.sha }}",
