@@ -31,6 +31,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: src/package-lock.json
 
+      - name: Install Heroku CLI
+        run: |
+          curl https://cli-assets.heroku.com/install.sh | sh
+
       - name: Install dependencies
         run: |
           cd src
