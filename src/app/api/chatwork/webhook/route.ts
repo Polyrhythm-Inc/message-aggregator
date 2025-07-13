@@ -17,6 +17,8 @@ export async function POST(request: NextRequest) {
     // APIキーの検証
     const webhookApiKeys = process.env.CHATWORK_WEBHOOK_API_KEY?.split(',') || [];
     if (!webhookApiKeys.includes(chatworkWebhook.chatwork_webhook_signature)) {
+      logger.error(chatworkWebhook.chatwork_webhook_signature);
+      logger.error(webhookApiKeys);
       logger.error('Chatwork Webhook API Keyが無効です', {
         provided_signature: chatworkWebhook.chatwork_webhook_signature
       });
