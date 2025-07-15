@@ -6,7 +6,6 @@ export type ChatworkWebhookEvent = {
 };
 
 export type ChatworkWebhookInput = {
-  chatwork_webhook_signature: string;
   webhook_event?: ChatworkWebhookEvent;
 };
 

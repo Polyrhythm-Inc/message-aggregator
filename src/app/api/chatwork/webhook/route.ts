@@ -8,19 +8,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const chatworkWebhook = body as ChatworkWebhookInput;
 
+    // chatwork_webhook_signatureをクエリストリングから取得
+    const url = new URL(request.url);
+    const chatworkWebhookSignature = url.searchParams.get('chatwork_webhook_signature');
+
     logger.info('Chatworkイベントを受信しました', { 
-      signature: chatworkWebhook.chatwork_webhook_signature,
+      signature: chatworkWebhookSignature,
       room_id: chatworkWebhook.webhook_event?.room_id,
       message_id: chatworkWebhook.webhook_event?.message_id
     });
 
     // APIキーの検証
     const webhookApiKeys = process.env.CHATWORK_WEBHOOK_API_KEY?.split(',') || [];
-    if (!webhookApiKeys.includes(chatworkWebhook.chatwork_webhook_signature)) {
-      logger.error(chatworkWebhook.chatwork_webhook_signature);
-      logger.error(webhookApiKeys);
+    if (!chatworkWebhookSignature || !webhookApiKeys.includes(chatworkWebhookSignature)) {
       logger.error('Chatwork Webhook API Keyが無効です', {
-        provided_signature: chatworkWebhook.chatwork_webhook_signature
+        provided_signature: chatworkWebhookSignature,
+        configured_keys: webhookApiKeys
       });
       return NextResponse.json(
         { error: 'Unauthorized' },
