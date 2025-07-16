@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
         provided_signature: chatworkWebhookSignature,
         configured_keys: webhookApiKeys
       });
+      logger.error(webhookApiKeys);
+      logger.error(chatworkWebhookSignature);
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
