@@ -74,6 +74,26 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
     slackWebhook.authorizations?.find((auth) => auth.is_bot)?.user_id ||
     process.env.SLACK_BOT_USER_ID;
 
+  if (event.ts) {
+    try {
+      await client.reactions.add({
+        channel: event.channel,
+        timestamp: event.ts,
+        name: 'eyes',
+      });
+      logger.info('Slackメッセージにリアクションを追加しました', {
+        channel: event.channel,
+        ts: event.ts,
+      });
+    } catch (error) {
+      logger.warn('Slackメッセージへのリアクション追加に失敗しました', {
+        channel: event.channel,
+        ts: event.ts,
+        error: error instanceof Error ? error.message : error,
+      });
+    }
+  }
+
   const originalText = event.text || SlackHelper.textInWebhook(slackWebhook);
   const cleanedText = cleanMentionText(originalText, botUserId);
 

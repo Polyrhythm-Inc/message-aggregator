@@ -2,9 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { logger } from './logger';
 
 const TASK_SERVER_API_URL = 'https://tasks.polyrhythm.tokyo/api/external/tasks';
-const PROJECT_MATCH_API_URL =
-  process.env.PROJECT_MATCH_API_URL ??
-  'https://auth-suite.polyrhythm.tokyo/api/projects/match';
+const PROJECT_MATCH_API_URL = 'https://auth-suite.polyrhythm.tokyo/api/projects/match';
 
 type CreateTaskRequest = {
   title: string;
