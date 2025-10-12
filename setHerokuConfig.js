@@ -78,7 +78,7 @@ try {
     'SLACK_BOT_TOKEN',
     'EXTERNAL_SLACK_WEBHOOK_URL',
     'CHATWORK_API_TOKEN',
-    'CHATWORK_WEBHOOK_API_KEY'
+    'CHATWORK_WEBHOOK_TOKEN'
   ];
 
   // 各環境変数をHerokuに設定

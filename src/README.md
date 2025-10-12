@@ -27,7 +27,7 @@ node setHerokuConfig.js message-aggregator
 heroku config:set SLACK_BOT_TOKEN=xoxb-your-token --app your-app
 heroku config:set EXTERNAL_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx --app your-app
 heroku config:set CHATWORK_API_TOKEN=your-token --app your-app
-heroku config:set CHATWORK_WEBHOOK_API_KEY=your-api-key --app your-app
+heroku config:set CHATWORK_WEBHOOK_TOKEN=your-api-key --app your-app
 ```
 
 ### 必要な環境変数
@@ -37,7 +37,7 @@ heroku config:set CHATWORK_WEBHOOK_API_KEY=your-api-key --app your-app
 | `SLACK_BOT_TOKEN` | SlackのBot User OAuth Token |
 | `EXTERNAL_SLACK_WEBHOOK_URL` | 転送先SlackのWebhook URL |
 | `CHATWORK_API_TOKEN` | ChatworkのAPI Token |
-| `CHATWORK_WEBHOOK_API_KEY` | ChatworkのWebhook認証キー |
+| `CHATWORK_WEBHOOK_TOKEN` | ChatworkのWebhook認証キー |
 
 ## 📝 使用方法
 
@@ -48,7 +48,7 @@ heroku config:set CHATWORK_WEBHOOK_API_KEY=your-api-key --app your-app
 ### Chatwork設定
 1. Chatworkの管理画面でWebhook設定
 2. 上記のChatwork Webhook URLを設定
-3. API Keyを `CHATWORK_WEBHOOK_API_KEY` として設定
+3. API Keyを `CHATWORK_WEBHOOK_TOKEN` として設定
 
 ## 🛠️ 開発環境
 
