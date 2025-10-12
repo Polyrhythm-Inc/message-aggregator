@@ -4,70 +4,89 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment environment'
+        description: 'Deploy environment'
         required: true
         default: 'production'
         type: choice
         options:
           - production
           - staging
+          - development
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    permissions:
+      contents: write
+      actions: read
+      packages: read
+      repository-projects: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      DEPLOYMENT_API_URL: ${{ secrets.DEPLOYMENT_API_URL }}
+      DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: src/package-lock.json
+          fetch-depth: 0
 
-      - name: Install dependencies
-        run: |
-          cd src
-          npm ci
+      - name: Set up GitHub Token for private repo access
+        run: echo "Using GitHub token for organization private repo access"
 
-      - name: Build application
+      - name: Install Heroku CLI
         run: |
-          cd src
-          npm run build
+          wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          echo "/usr/local/bin/heroku" >> $GITHUB_PATH
+
+      - name: Setup deployment environment
+        id: setup
+        run: |
+          ENVIRONMENT="${{ github.event.inputs.environment || 'production' }}"
+          echo "DEPLOY_ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
+
+          APP_NAME="${{ secrets.HEROKU_APP_NAME }}"
+          if [ "${ENVIRONMENT}" = "staging" ] && [ -n "${{ secrets.HEROKU_APP_NAME_STAGING }}" ]; then
+            APP_NAME="${{ secrets.HEROKU_APP_NAME_STAGING }}"
+          elif [ "${ENVIRONMENT}" = "development" ] && [ -n "${{ secrets.HEROKU_APP_NAME_DEVELOPMENT }}" ]; then
+            APP_NAME="${{ secrets.HEROKU_APP_NAME_DEVELOPMENT }}"
+          fi
+
+          if [ -z "${APP_NAME}" ]; then
+            echo "Heroku app name is not configured for ${ENVIRONMENT} environment." >&2
+            exit 1
+          fi
+
+          echo "HEROKU_APP_NAME=${APP_NAME}" >> $GITHUB_ENV
 
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
         run: |
           set -euo pipefail
 
+          cat >~/.netrc <<EOF
+          machine api.heroku.com
+            login api
+            password ${HEROKU_API_KEY}
+          machine git.heroku.com
+            login api
+            password ${HEROKU_API_KEY}
+          EOF
+          chmod 600 ~/.netrc
+
           git config user.name "Heroku Deploy"
-          git config user.email "${HEROKU_EMAIL}"
+          git config user.email "heroku-deploy@polyrhythm.tokyo"
 
-          if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
-            git fetch --prune --unshallow
-          fi
+          heroku git:remote -a "${HEROKU_APP_NAME}"
 
-          REMOTE_URL="https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git"
-          if git remote | grep -qx 'heroku'; then
-            git remote set-url heroku "${REMOTE_URL}"
-          else
-            git remote add heroku "${REMOTE_URL}"
-          fi
-
-          SUBTREE_SHA="$(git subtree split --prefix=src HEAD)"
-          if ! git push heroku "${SUBTREE_SHA}:main"; then
-            echo "Heroku push failed without --force. Retrying with --force."
-            git push --force heroku "${SUBTREE_SHA}:main"
-          fi
+          git push heroku main:main --force
 
       - name: Record deployment success
         if: success() && env.DEPLOYMENT_API_URL && env.DEPLOYMENT_API_KEY
@@ -94,7 +113,7 @@ jobs:
                 "repository": "${{ github.repository }}",
                 "actor": "${{ github.actor }}",
                 "platform": "heroku",
-                "appName": "${{ secrets.HEROKU_APP_NAME }}"
+                "appName": "${{ env.HEROKU_APP_NAME }}"
               }
             }'
 
@@ -123,6 +142,6 @@ jobs:
                 "repository": "${{ github.repository }}",
                 "actor": "${{ github.actor }}",
                 "platform": "heroku",
-                "appName": "${{ secrets.HEROKU_APP_NAME }}"
+                "appName": "${{ env.HEROKU_APP_NAME }}"
               }
-            }' 
+            }'
