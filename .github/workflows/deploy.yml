@@ -31,10 +31,6 @@ jobs:
           cache: 'npm'
           cache-dependency-path: src/package-lock.json
 
-      - name: Install Heroku CLI
-        run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
-
       - name: Install dependencies
         run: |
           cd src
@@ -46,13 +42,32 @@ jobs:
           npm run build
 
       - name: Deploy to Heroku
-        uses: akhileshns/heroku-deploy@v3.12.14
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          appdir: "src"
-          team: "polyrhythm-inc"
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "Heroku Deploy"
+          git config user.email "${HEROKU_EMAIL}"
+
+          if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
+            git fetch --prune --unshallow
+          fi
+
+          REMOTE_URL="https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git"
+          if git remote | grep -qx 'heroku'; then
+            git remote set-url heroku "${REMOTE_URL}"
+          else
+            git remote add heroku "${REMOTE_URL}"
+          fi
+
+          SUBTREE_SHA="$(git subtree split --prefix=src HEAD)"
+          if ! git push heroku "${SUBTREE_SHA}:main"; then
+            echo "Heroku push failed without --force. Retrying with --force."
+            git push --force heroku "${SUBTREE_SHA}:main"
+          fi
 
       - name: Record deployment success
         if: success() && env.DEPLOYMENT_API_URL && env.DEPLOYMENT_API_KEY
