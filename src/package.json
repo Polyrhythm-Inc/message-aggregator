@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@slack/web-api": "^7.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
