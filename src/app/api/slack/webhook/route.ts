@@ -54,7 +54,19 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   console.log('processSlackEvent', slackWebhook);
   const event = slackWebhook.event;
 
-  if (event.type !== 'app_mention') {
+  const botToken = process.env.SLACK_BOT_TOKEN;
+  if (!botToken) {
+    throw new Error('SLACK_BOT_TOKENが設定されていません');
+  }
+
+  const botUserId =
+    slackWebhook.authorizations?.find((auth) => auth.is_bot)?.user_id ||
+    process.env.SLACK_BOT_USER_ID;
+
+  const isAppMention = event.type === 'app_mention';
+  const isMessage = event.type === 'message';
+
+  if (!isAppMention && !isMessage) {
     logger.debug('対象外のイベントタイプのためスキップしました', { eventType: event.type });
     return;
   }
@@ -64,15 +76,35 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
     return;
   }
 
-  const botToken = process.env.SLACK_BOT_TOKEN;
-  if (!botToken) {
-    throw new Error('SLACK_BOT_TOKENが設定されていません');
+  if (isMessage) {
+    const ignoredSubtypes = new Set(['message_changed', 'message_deleted', 'thread_broadcast']);
+    if (event.subtype && ignoredSubtypes.has(event.subtype)) {
+      logger.debug('処理対象外のメッセージサブタイプのためスキップしました', {
+        subtype: event.subtype,
+        eventType: event.type,
+      });
+      return;
+    }
+
+    if (!botUserId) {
+      logger.warn('ボットユーザーIDを特定できないためメッセージイベントをスキップしました', {
+        eventType: event.type,
+        channel: event.channel,
+      });
+      return;
+    }
+
+    const rawTextForMentionCheck = event.text || SlackHelper.textInWebhook(slackWebhook);
+    if (!rawTextForMentionCheck.includes(`<@${botUserId}>`)) {
+      logger.debug('ボットへのメンションを含まないメッセージのためスキップしました', {
+        channel: event.channel,
+        user: event.user,
+      });
+      return;
+    }
   }
 
   const client = new WebClient(botToken);
-  const botUserId =
-    slackWebhook.authorizations?.find((auth) => auth.is_bot)?.user_id ||
-    process.env.SLACK_BOT_USER_ID;
 
   if (event.ts) {
     try {
