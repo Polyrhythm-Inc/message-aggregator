@@ -89,6 +89,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   ]);
 
   const title = await generateTaskTitle(cleanedText);
+  console.log('title', title);
   const description = await buildTaskDescription({
     message: cleanedText,
     permalink,
@@ -96,6 +97,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
     userId: event.user,
     channelName,
   });
+  console.log('description', description);
 
   const apiKey = ensureTaskServerApiKey();
   const createPayload = {
@@ -107,6 +109,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   };
 
   const result = await createTaskOnTaskServer(createPayload, apiKey);
+  console.log('result', result);
 
   if (!result.success) {
     await handleTaskCreationFailure({
