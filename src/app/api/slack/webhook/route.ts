@@ -51,6 +51,7 @@ export async function GET() {
 }
 
 async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
+  console.log('processSlackEvent', slackWebhook);
   const event = slackWebhook.event;
 
   if (event.type !== 'app_mention') {
@@ -88,7 +89,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   ]);
 
   const title = await generateTaskTitle(cleanedText);
-  const description = buildTaskDescription({
+  const description = await buildTaskDescription({
     message: cleanedText,
     permalink,
     userName,
