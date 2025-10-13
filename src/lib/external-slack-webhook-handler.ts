@@ -92,7 +92,7 @@ export const ExternalSlackWebhookHandler = {
       // "Hitoshi Yunoki" が含まれる場合は処理をスキップ
       if (senderName.includes('Hitoshi Yunoki')) {
         logger.info('Hitoshi Yunokiからのメッセージをスキップします');
-        return;
+        // return;
       }
 
       // メッセージテキストの取得（編集メッセージの場合は実際のテキストを使用）
