@@ -9,6 +9,7 @@ import {
   ensureTaskServerApiKey,
   generateTaskTitle,
 } from '../../../../lib/task-server';
+import { ExternalSlackWebhookHandler } from '@/lib/external-slack-webhook-handler';
 
 const ALERT_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
@@ -27,6 +28,9 @@ export async function POST(request: NextRequest) {
 
     // イベントの場合は外部Slackハンドラーで処理
     if (slackWebhook.type === 'event_callback') {
+      await ExternalSlackWebhookHandler.handleWebhook(slackWebhook);
+      logger.info('Slackイベントを正常に処理しました');
+
       processSlackEvent(slackWebhook).catch((error) => {
         logger.error('Slackイベントの非同期処理でエラーが発生しました', {
           error: error instanceof Error ? error.message : error,

@@ -64,7 +64,7 @@ export const ExternalSlackWebhookHandler = {
       // メンバーIDがU031ZRTQYの場合は転送しない
       if (actualUser === 'U031ZRTQY') {
         logger.info('指定されたメンバーIDのメッセージをスキップします', { user: actualUser });
-        return;
+        // return;
       }
 
       logger.info('ユーザー情報を取得中...', { user_id: actualUser });
