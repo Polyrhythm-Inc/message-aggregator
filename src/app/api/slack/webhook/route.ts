@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
         logger.error('Slackイベントの非同期処理でエラーが発生しました', {
           error: error instanceof Error ? error.message : error,
         });
+        logger.error(error);
       });
       logger.info('Slackイベントの非同期処理を開始しました');
     }
