@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const slackWebhook = body as SlackWebhook;
 
-    logger.info('Slackイベントを受信しました', { type: slackWebhook.type });
+    logger.info({ type: slackWebhook.type }, 'Slackイベントを受信しました');
 
     // URL検証の場合はチャレンジを返す
     if (slackWebhook.type === 'url_verification') {
@@ -32,17 +32,20 @@ export async function POST(request: NextRequest) {
       logger.info('Slackイベントを正常に処理しました');
 
       processSlackEvent(slackWebhook).catch((error) => {
-        logger.error('Slackイベントの非同期処理でエラーが発生しました', {
-          error: error instanceof Error ? error.message : error,
-        });
-        logger.error(error);
+        logger.error(
+          {
+            errorMessage: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          },
+          'Slackイベントの非同期処理でエラーが発生しました'
+        );
       });
       logger.info('Slackイベントの非同期処理を開始しました');
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error('Slackイベント処理中にエラーが発生しました', error);
+    logger.error(error, 'Slackイベント処理中にエラーが発生しました');
     return NextResponse.json(
       { error: 'Internal Server Error' },
       { status: 500 }
@@ -56,7 +59,7 @@ export async function GET() {
 }
 
 async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
-  logger.info('processSlackEvent', slackWebhook);
+  logger.debug({ slackWebhook }, 'processSlackEvent');
   const event = slackWebhook.event;
 
   const botToken = process.env.SLACK_BOT_TOKEN;
@@ -72,39 +75,51 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   const isMessage = event.type === 'message';
 
   if (!isAppMention && !isMessage) {
-    logger.info('対象外のイベントタイプのためスキップしました', { eventType: event.type });
+    logger.debug(
+      { eventType: event.type },
+      '対象外のイベントタイプのためスキップしました'
+    );
     return;
   }
 
   if (event.subtype === 'bot_message') {
-    logger.info('ボットメッセージのためスキップしました', { user: event.user });
+    logger.debug({ user: event.user }, 'ボットメッセージのためスキップしました');
     return;
   }
 
   if (isMessage) {
     const ignoredSubtypes = new Set(['message_changed', 'message_deleted', 'thread_broadcast']);
     if (event.subtype && ignoredSubtypes.has(event.subtype)) {
-      logger.info('処理対象外のメッセージサブタイプのためスキップしました', {
-        subtype: event.subtype,
-        eventType: event.type,
-      });
+      logger.debug(
+        {
+          subtype: event.subtype,
+          eventType: event.type,
+        },
+        '処理対象外のメッセージサブタイプのためスキップしました'
+      );
       return;
     }
 
     if (!botUserId) {
-      logger.warn('ボットユーザーIDを特定できないためメッセージイベントをスキップしました', {
-        eventType: event.type,
-        channel: event.channel,
-      });
+      logger.warn(
+        {
+          eventType: event.type,
+          channel: event.channel,
+        },
+        'ボットユーザーIDを特定できないためメッセージイベントをスキップしました'
+      );
       return;
     }
 
     const rawTextForMentionCheck = event.text || SlackHelper.textInWebhook(slackWebhook);
     if (!rawTextForMentionCheck.includes(`<@${botUserId}>`)) {
-      logger.info('ボットへのメンションを含まないメッセージのためスキップしました', {
-        channel: event.channel,
-        user: event.user,
-      });
+      logger.debug(
+        {
+          channel: event.channel,
+          user: event.user,
+        },
+        'ボットへのメンションを含まないメッセージのためスキップしました'
+      );
       return;
     }
   }
@@ -118,17 +133,23 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
         timestamp: event.ts,
         name: 'eyes',
       });
-      logger.info('Slackメッセージにリアクションを追加しました', {
-        channel: event.channel,
-        ts: event.ts,
-      });
+      logger.info(
+        {
+          channel: event.channel,
+          ts: event.ts,
+        },
+        'Slackメッセージにリアクションを追加しました'
+      );
     } catch (error) {
       const errorDetails = buildSlackErrorLogPayload(error);
-      logger.warn('Slackメッセージへのリアクション追加に失敗しました', {
-        channel: event.channel,
-        ts: event.ts,
-        ...errorDetails,
-      });
+      logger.warn(
+        {
+          channel: event.channel,
+          ts: event.ts,
+          ...errorDetails,
+        },
+        'Slackメッセージへのリアクション追加に失敗しました'
+      );
     }
   }
 
@@ -136,7 +157,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   const cleanedText = cleanMentionText(originalText, botUserId);
 
   if (!cleanedText) {
-    logger.warn('メンション本文が取得できませんでした', { originalText });
+    logger.warn({ originalText }, 'メンション本文が取得できませんでした');
     return;
   }
 
@@ -209,10 +230,13 @@ async function fetchUserName(client: WebClient, userId?: string): Promise<string
     return result.user?.real_name || result.user?.name || undefined;
   } catch (error) {
     const errorDetails = buildSlackErrorLogPayload(error);
-    logger.warn('Slackユーザー情報取得に失敗しました', {
-      userId,
-      ...errorDetails,
-    });
+    logger.warn(
+      {
+        userId,
+        ...errorDetails,
+      },
+      'Slackユーザー情報取得に失敗しました'
+    );
     return undefined;
   }
 }
@@ -227,10 +251,13 @@ async function fetchChannelName(client: WebClient, channelId: string): Promise<s
     return undefined;
   } catch (error) {
     const errorDetails = buildSlackErrorLogPayload(error);
-    logger.warn('Slackチャンネル情報取得に失敗しました', {
-      channelId,
-      ...errorDetails,
-    });
+    logger.warn(
+      {
+        channelId,
+        ...errorDetails,
+      },
+      'Slackチャンネル情報取得に失敗しました'
+    );
     return undefined;
   }
 }
@@ -244,11 +271,14 @@ async function fetchPermalink(client: WebClient, channel: string, ts: string): P
     return result.permalink ?? undefined;
   } catch (error) {
     const errorDetails = buildSlackErrorLogPayload(error);
-    logger.warn('Slackメッセージのパーマリンク取得に失敗しました', {
-      channel,
-      ts,
-      ...errorDetails,
-    });
+    logger.warn(
+      {
+        channel,
+        ts,
+        ...errorDetails,
+      },
+      'Slackメッセージのパーマリンク取得に失敗しました'
+    );
     return undefined;
   }
 }
@@ -273,14 +303,20 @@ async function notifyTaskCreationSuccess({
       text,
       thread_ts: threadTs,
     });
-    logger.info('Slackにタスク作成完了メッセージを投稿しました', { channel: event.channel, threadTs });
+    logger.info(
+      { channel: event.channel, threadTs },
+      'Slackにタスク作成完了メッセージを投稿しました'
+    );
   } catch (error) {
     const errorDetails = buildSlackErrorLogPayload(error);
-    logger.error('Slackへのタスク作成完了メッセージ送信に失敗しました', {
-      channel: event.channel,
-      threadTs,
-      ...errorDetails,
-    });
+    logger.error(
+      {
+        channel: event.channel,
+        threadTs,
+        ...errorDetails,
+      },
+      'Slackへのタスク作成完了メッセージ送信に失敗しました'
+    );
     await sendErrorAlert({
       message: 'タスク作成後のSlack返信に失敗しました',
       error: errorDetails.errorMessage,
@@ -303,7 +339,7 @@ async function handleTaskCreationFailure({
   cleanedText: string;
   permalink?: string;
 }): Promise<void> {
-  logger.error('タスク作成に失敗しました', { error });
+  logger.error({ error }, 'タスク作成に失敗しました');
 
   await sendErrorAlert({
     message: 'Slackメンションからのタスク作成に失敗しました',
@@ -322,11 +358,14 @@ async function handleTaskCreationFailure({
     });
   } catch (postError) {
     const errorDetails = buildSlackErrorLogPayload(postError);
-    logger.error('タスク作成失敗通知の送信に失敗しました', {
-      channel: event.channel,
-      threadTs,
-      ...errorDetails,
-    });
+    logger.error(
+      {
+        channel: event.channel,
+        threadTs,
+        ...errorDetails,
+      },
+      'タスク作成失敗通知の送信に失敗しました'
+    );
   }
 }
 
@@ -386,16 +425,22 @@ async function sendErrorAlert({
     });
 
     if (!response.ok) {
-      logger.error('エラーアラート送信に失敗しました', {
-        status: response.status,
-        statusText: response.statusText,
-      });
+      logger.error(
+        {
+          status: response.status,
+          statusText: response.statusText,
+        },
+        'エラーアラート送信に失敗しました'
+      );
     } else {
       logger.info('エラーアラートを送信しました');
     }
   } catch (sendError) {
-    logger.error('エラーアラート送信処理で例外が発生しました', {
-      error: sendError instanceof Error ? sendError.message : sendError,
-    });
+    logger.error(
+      {
+        error: sendError instanceof Error ? sendError.message : sendError,
+      },
+      'エラーアラート送信処理で例外が発生しました'
+    );
   }
 }
