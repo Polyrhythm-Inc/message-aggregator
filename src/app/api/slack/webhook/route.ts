@@ -55,7 +55,7 @@ export async function GET() {
 }
 
 async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
-  console.log('processSlackEvent', slackWebhook);
+  logger.info('processSlackEvent', slackWebhook);
   const event = slackWebhook.event;
 
   const botToken = process.env.SLACK_BOT_TOKEN;
@@ -71,19 +71,19 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   const isMessage = event.type === 'message';
 
   if (!isAppMention && !isMessage) {
-    logger.debug('対象外のイベントタイプのためスキップしました', { eventType: event.type });
+    logger.info('対象外のイベントタイプのためスキップしました', { eventType: event.type });
     return;
   }
 
   if (event.subtype === 'bot_message') {
-    logger.debug('ボットメッセージのためスキップしました', { user: event.user });
+    logger.info('ボットメッセージのためスキップしました', { user: event.user });
     return;
   }
 
   if (isMessage) {
     const ignoredSubtypes = new Set(['message_changed', 'message_deleted', 'thread_broadcast']);
     if (event.subtype && ignoredSubtypes.has(event.subtype)) {
-      logger.debug('処理対象外のメッセージサブタイプのためスキップしました', {
+      logger.info('処理対象外のメッセージサブタイプのためスキップしました', {
         subtype: event.subtype,
         eventType: event.type,
       });
@@ -100,7 +100,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
 
     const rawTextForMentionCheck = event.text || SlackHelper.textInWebhook(slackWebhook);
     if (!rawTextForMentionCheck.includes(`<@${botUserId}>`)) {
-      logger.debug('ボットへのメンションを含まないメッセージのためスキップしました', {
+      logger.info('ボットへのメンションを含まないメッセージのためスキップしました', {
         channel: event.channel,
         user: event.user,
       });
