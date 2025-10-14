@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { WebClient } from '@slack/web-api';
+import { WebClient, WebAPICallError } from '@slack/web-api';
 import { SlackWebhook } from '../../../../types/slack';
 import { SlackHelper } from '../../../../lib/slack-helper';
 import { logger } from '../../../../lib/logger';
@@ -123,10 +123,11 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
         ts: event.ts,
       });
     } catch (error) {
+      const errorDetails = buildSlackErrorLogPayload(error);
       logger.warn('Slackメッセージへのリアクション追加に失敗しました', {
         channel: event.channel,
         ts: event.ts,
-        error: error instanceof Error ? error.message : error,
+        ...errorDetails,
       });
     }
   }
@@ -207,9 +208,10 @@ async function fetchUserName(client: WebClient, userId?: string): Promise<string
     const result = await client.users.info({ user: userId });
     return result.user?.real_name || result.user?.name || undefined;
   } catch (error) {
+    const errorDetails = buildSlackErrorLogPayload(error);
     logger.warn('Slackユーザー情報取得に失敗しました', {
       userId,
-      error: error instanceof Error ? error.message : error,
+      ...errorDetails,
     });
     return undefined;
   }
@@ -224,9 +226,10 @@ async function fetchChannelName(client: WebClient, channelId: string): Promise<s
     }
     return undefined;
   } catch (error) {
+    const errorDetails = buildSlackErrorLogPayload(error);
     logger.warn('Slackチャンネル情報取得に失敗しました', {
       channelId,
-      error: error instanceof Error ? error.message : error,
+      ...errorDetails,
     });
     return undefined;
   }
@@ -240,10 +243,11 @@ async function fetchPermalink(client: WebClient, channel: string, ts: string): P
     });
     return result.permalink ?? undefined;
   } catch (error) {
+    const errorDetails = buildSlackErrorLogPayload(error);
     logger.warn('Slackメッセージのパーマリンク取得に失敗しました', {
       channel,
       ts,
-      error: error instanceof Error ? error.message : error,
+      ...errorDetails,
     });
     return undefined;
   }
@@ -271,15 +275,15 @@ async function notifyTaskCreationSuccess({
     });
     logger.info('Slackにタスク作成完了メッセージを投稿しました', { channel: event.channel, threadTs });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorDetails = buildSlackErrorLogPayload(error);
     logger.error('Slackへのタスク作成完了メッセージ送信に失敗しました', {
       channel: event.channel,
       threadTs,
-      error: errorMessage,
+      ...errorDetails,
     });
     await sendErrorAlert({
       message: 'タスク作成後のSlack返信に失敗しました',
-      error: errorMessage,
+      error: errorDetails.errorMessage,
       event,
       cleanedText: title,
     });
@@ -317,12 +321,39 @@ async function handleTaskCreationFailure({
       thread_ts: threadTs,
     });
   } catch (postError) {
+    const errorDetails = buildSlackErrorLogPayload(postError);
     logger.error('タスク作成失敗通知の送信に失敗しました', {
       channel: event.channel,
       threadTs,
-      error: postError instanceof Error ? postError.message : postError,
+      ...errorDetails,
     });
   }
+}
+
+function buildSlackErrorLogPayload(error: unknown): {
+  errorMessage: string;
+  errorCode?: string;
+  slackError?: unknown;
+} {
+  if (error && typeof error === 'object') {
+    const slackError = error as Partial<WebAPICallError> & {
+      data?: unknown;
+      code?: string;
+    };
+
+    return {
+      errorMessage:
+        typeof slackError.message === 'string'
+          ? slackError.message
+          : String(error),
+      errorCode: slackError.code,
+      slackError: 'data' in slackError ? slackError.data : undefined,
+    };
+  }
+
+  return {
+    errorMessage: error instanceof Error ? error.message : String(error),
+  };
 }
 
 async function sendErrorAlert({
