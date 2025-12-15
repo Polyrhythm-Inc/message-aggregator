@@ -11,7 +11,7 @@ export const ChatworkWebhookHandler = {
   async handleWebhook(webhook: ChatworkWebhookInput): Promise<void> {
     // 外部のSlackワークスペースのWebhook URLを取得
     const webhookUrl = process.env.EXTERNAL_SLACK_WEBHOOK_URL;
-    
+
     if (!webhookUrl) {
       logger.error('EXTERNAL_SLACK_WEBHOOK_URL環境変数が設定されていません');
       return;
@@ -23,10 +23,10 @@ export const ChatworkWebhookHandler = {
       const messageId = webhook.webhook_event?.message_id;
       const fromAccountId = webhook.webhook_event?.from_account_id;
 
-      logger.info('ChatworkのWebhookイベントを処理中', { 
-        roomId, 
-        messageId, 
-        fromAccountId 
+      logger.info('ChatworkのWebhookイベントを処理中', {
+        roomId,
+        messageId,
+        fromAccountId
       });
 
       // 無視するアカウントからのメッセージかどうか確認
@@ -45,14 +45,14 @@ export const ChatworkWebhookHandler = {
       // Chatworkの送信者情報を取得
       const chatworkService = new ChatworkService(chatworkApiToken);
       let senderName = `Account ${fromAccountId}`;
-      
+
       try {
         const accountInfo = await chatworkService.getAccountInfo(fromAccountId);
         senderName = accountInfo.name;
       } catch (error) {
-        logger.warn('アカウント情報の取得に失敗しました、デフォルト値を使用します', { 
+        logger.warn('アカウント情報の取得に失敗しました、デフォルト値を使用します', {
           fromAccountId,
-          error: error instanceof Error ? error.message : error 
+          error: error instanceof Error ? error.message : error
         });
       }
 
@@ -62,8 +62,8 @@ export const ChatworkWebhookHandler = {
       // Slackに投稿するメッセージを作成
       const slackMessage = `**Chatwork Message**\nFrom: ${senderName}\nRoom: ${roomId}\nMessage ID: [${messageId}](${chatworkMessageLink})\n\n${messageBody}`;
 
-      logger.info('外部Slackに送信中', { 
-        slackMessage: slackMessage.substring(0, 100) + '...' 
+      logger.info('外部Slackに送信中', {
+        slackMessage: slackMessage.substring(0, 100) + '...'
       });
 
       // 外部のSlackワークスペースにメッセージを送信
@@ -75,9 +75,9 @@ export const ChatworkWebhookHandler = {
         body: JSON.stringify({ text: slackMessage }),
       });
 
-      logger.info('Chatworkメッセージを外部Slackに送信しました', { 
+      logger.info('Chatworkメッセージを外部Slackに送信しました', {
         status: response.status,
-        messageId 
+        messageId
       });
 
       if (!response.ok) {
@@ -98,4 +98,4 @@ export const ChatworkWebhookHandler = {
       throw error;
     }
   },
-}; 
+};

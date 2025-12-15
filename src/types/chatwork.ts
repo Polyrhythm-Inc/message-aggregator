@@ -45,4 +45,15 @@ export type ChatworkRoomInfo = {
   icon_path: string;
   last_update_time: number;
   description?: string;
+};
+
+export type ChatworkRoomMember = {
+  account_id: number;
+  name: string;
+  chatwork_id?: string;
+  organization_id?: number;
+  organization_name?: string;
+  department?: string;
+  avatar_image_url?: string;
+  role?: string;
 }; 

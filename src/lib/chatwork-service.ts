@@ -1,4 +1,4 @@
-import { ChatworkAccountInfo, ChatworkRoomInfo } from '../types/chatwork';
+import { ChatworkAccountInfo, ChatworkRoomInfo, ChatworkRoomMember } from '../types/chatwork';
 import { logger } from './logger';
 
 export class ChatworkService {
@@ -38,7 +38,7 @@ export class ChatworkService {
   async getAccountInfo(accountId: number): Promise<ChatworkAccountInfo> {
     try {
       logger.info('Chatworkアカウント情報を取得中', { accountId });
-      
+
       const response = await fetch(`${this.baseUrl}/contacts/${accountId}`, {
         headers: {
           'X-ChatWorkToken': this.apiToken,
@@ -53,9 +53,35 @@ export class ChatworkService {
       logger.info('Chatworkアカウント情報を取得しました', { accountId, name: data.name });
       return data;
     } catch (error) {
-      logger.error('Chatworkアカウント情報の取得に失敗しました', { 
-        accountId, 
-        error: error instanceof Error ? error.message : error 
+      logger.error('Chatworkアカウント情報の取得に失敗しました', {
+        accountId,
+        error: error instanceof Error ? error.message : error
+      });
+      throw error;
+    }
+  }
+
+  async getRoomMembers(roomId: number): Promise<ChatworkRoomMember[]> {
+    try {
+      logger.info('Chatworkルームメンバーを取得中', { roomId });
+
+      const response = await fetch(`${this.baseUrl}/rooms/${roomId}/members`, {
+        headers: {
+          'X-ChatWorkToken': this.apiToken,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get room members: ${response.status} ${response.statusText}`);
+      }
+
+      const data: ChatworkRoomMember[] = await response.json();
+      logger.info('Chatworkルームメンバーを取得しました', { roomId, count: data.length });
+      return data;
+    } catch (error) {
+      logger.error('Chatworkルームメンバーの取得に失敗しました', {
+        roomId,
+        error: error instanceof Error ? error.message : error
       });
       throw error;
     }

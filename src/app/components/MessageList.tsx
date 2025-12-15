@@ -1,0 +1,101 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { SlackMessage } from '@/types/slack';
+import MessageItem from './MessageItem';
+
+export default function MessageList() {
+  const [messages, setMessages] = useState<SlackMessage[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch('/api/slack/messages');
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || '取得に失敗しました');
+      }
+      const data = await res.json();
+      setMessages(data.messages);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'エラーが発生しました');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleDelete = async (ts: string) => {
+    const res = await fetch('/api/slack/messages', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ts }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.error || '削除に失敗しました');
+    }
+
+    // 削除後、即座に状態から削除し、再取得
+    setMessages((prev) => prev.filter((m) => m.ts !== ts));
+
+    // バックグラウンドで再取得（ローディング表示なし）
+    fetch('/api/slack/messages')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.messages) {
+          setMessages(data.messages);
+        }
+      })
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-100"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+        <p className="text-red-800 dark:text-red-200">{error}</p>
+        <button
+          onClick={fetchMessages}
+          className="mt-2 text-sm text-red-600 dark:text-red-400 hover:underline"
+        >
+          再試行
+        </button>
+      </div>
+    );
+  }
+
+  if (messages.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+        メッセージがありません
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {messages.map((message) => (
+        <MessageItem
+          key={message.ts}
+          message={message}
+          onDelete={() => handleDelete(message.ts)}
+        />
+      ))}
+    </div>
+  );
+}

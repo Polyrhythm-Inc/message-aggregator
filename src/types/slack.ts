@@ -89,4 +89,47 @@ export type SlackWebhook = {
   }[];
   is_ext_shared_channel: boolean;
   event_context: string;
+};
+
+// メール添付ファイル用の型
+export type SlackEmailFile = {
+  filetype: string;
+  subject?: string;
+  plain_text?: string;
+  from?: { address: string; name: string }[];
+};
+
+// メッセージ一覧表示用の型
+export type SlackMessage = {
+  ts: string;
+  text: string;
+  user?: string;
+  userName?: string;
+  subtype?: string;
+  bot_id?: string;
+  email?: {
+    subject: string;
+    body: string;
+    from: string;
+  };
+};
+
+export type MessagesResponse = {
+  messages: SlackMessage[];
+  hasMore: boolean;
+};
+
+// Slack返信APIのリクエスト型
+export type SlackReplyRequest = {
+  workspace: string;
+  channelId: string;
+  threadTs: string;
+  text: string;
+};
+
+// Slack返信APIのレスポンス型
+export type SlackReplyResponse = {
+  success: boolean;
+  error?: string;
+  messageTs?: string;
 }; 

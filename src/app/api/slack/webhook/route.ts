@@ -70,6 +70,11 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   const botUserId =
     slackWebhook.authorizations?.find((auth) => auth.is_bot)?.user_id ||
     process.env.SLACK_BOT_USER_ID;
+  const teamId =
+    slackWebhook.event.team ||
+    slackWebhook.team_id ||
+    slackWebhook.context_team_id ||
+    undefined;
 
   const isAppMention = event.type === 'app_mention';
   const isMessage = event.type === 'message';
@@ -124,7 +129,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
     }
   }
 
-  const client = new WebClient(botToken);
+  const client = new WebClient(botToken, teamId ? { teamId } : undefined);
 
   if (event.ts) {
     try {
@@ -163,8 +168,8 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
 
   const [userName, channelName, permalink] = await Promise.all([
     fetchUserName(client, event.user),
-    fetchChannelName(client, event.channel),
-    fetchPermalink(client, event.channel, event.ts),
+    fetchChannelName(client, event.channel, teamId),
+    fetchPermalink(client, event.channel, event.ts, teamId),
   ]);
 
   const title = await generateTaskTitle(cleanedText);
@@ -220,7 +225,10 @@ function cleanMentionText(text: string, botUserId?: string): string {
   return cleaned;
 }
 
-async function fetchUserName(client: WebClient, userId?: string): Promise<string | undefined> {
+async function fetchUserName(
+  client: WebClient,
+  userId?: string
+): Promise<string | undefined> {
   if (!userId) {
     return undefined;
   }
@@ -241,9 +249,17 @@ async function fetchUserName(client: WebClient, userId?: string): Promise<string
   }
 }
 
-async function fetchChannelName(client: WebClient, channelId: string): Promise<string | undefined> {
+async function fetchChannelName(
+  client: WebClient,
+  channelId: string,
+  teamId?: string
+): Promise<string | undefined> {
   try {
-    const result = await client.conversations.info({ channel: channelId });
+    const params = {
+      channel: channelId,
+      ...(teamId ? { team: teamId } : {}),
+    } as Parameters<typeof client.conversations.info>[0];
+    const result = await client.conversations.info(params);
     const channel = result.channel;
     if (channel && 'name' in channel) {
       return channel.name as string;
@@ -262,12 +278,19 @@ async function fetchChannelName(client: WebClient, channelId: string): Promise<s
   }
 }
 
-async function fetchPermalink(client: WebClient, channel: string, ts: string): Promise<string | undefined> {
+async function fetchPermalink(
+  client: WebClient,
+  channel: string,
+  ts: string,
+  teamId?: string
+): Promise<string | undefined> {
   try {
-    const result = await client.chat.getPermalink({
+    const params = {
       channel,
       message_ts: ts,
-    });
+      ...(teamId ? { team: teamId } : {}),
+    } as Parameters<typeof client.chat.getPermalink>[0];
+    const result = await client.chat.getPermalink(params);
     return result.permalink ?? undefined;
   } catch (error) {
     const errorDetails = buildSlackErrorLogPayload(error);
