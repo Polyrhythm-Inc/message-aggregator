@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, ReactNode } from 'react';
+import { useState, useMemo, useRef, useEffect, ReactNode } from 'react';
 import { SlackMessage } from '@/types/slack';
 import { extractSlackUrlInfo, SlackUrlInfo } from '@/lib/slack-url-parser';
 
@@ -79,6 +79,14 @@ export default function MessageItem({ message, onDelete }: Props) {
   const [sending, setSending] = useState(false);
   const [replyError, setReplyError] = useState<string | null>(null);
   const [replySuccess, setReplySuccess] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 返信フォームが開いたときにフォーカス
+  useEffect(() => {
+    if (replying && textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [replying]);
 
   // メッセージからSlack URL情報を抽出
   const slackUrlInfo: SlackUrlInfo | null = useMemo(() => {
@@ -219,6 +227,7 @@ export default function MessageItem({ message, onDelete }: Props) {
       {replying && (
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <textarea
+            ref={textareaRef}
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             onKeyDown={(e) => {
