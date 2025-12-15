@@ -1,8 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { SlackMessage } from '@/types/slack';
 import MessageItem from './MessageItem';
+
+function isWithin24Hours(ts: string): boolean {
+  const seconds = parseFloat(ts);
+  const messageDate = new Date(seconds * 1000);
+  const now = new Date();
+  const diffMs = now.getTime() - messageDate.getTime();
+  const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+  return diffMs <= twentyFourHoursMs;
+}
 
 export default function MessageList() {
   const [messages, setMessages] = useState<SlackMessage[]>([]);
@@ -57,6 +66,16 @@ export default function MessageList() {
     fetchMessages();
   }, [fetchMessages]);
 
+  // 24時間の境界インデックスを計算
+  const dividerIndex = useMemo(() => {
+    for (let i = 0; i < messages.length; i++) {
+      if (!isWithin24Hours(messages[i].ts)) {
+        return i;
+      }
+    }
+    return -1; // 全て24時間以内、または全て24時間以降
+  }, [messages]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-12">
@@ -89,12 +108,22 @@ export default function MessageList() {
 
   return (
     <div className="space-y-4">
-      {messages.map((message) => (
-        <MessageItem
-          key={message.ts}
-          message={message}
-          onDelete={() => handleDelete(message.ts)}
-        />
+      {messages.map((message, index) => (
+        <div key={message.ts}>
+          {index === dividerIndex && dividerIndex >= 0 && (
+            <div className="flex items-center gap-4 py-4">
+              <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+              <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                24時間以上前
+              </span>
+              <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+            </div>
+          )}
+          <MessageItem
+            message={message}
+            onDelete={() => handleDelete(message.ts)}
+          />
+        </div>
       ))}
     </div>
   );
