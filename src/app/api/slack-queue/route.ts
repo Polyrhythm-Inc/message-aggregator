@@ -64,9 +64,16 @@ export async function POST(request: NextRequest) {
 
     const body = (await request.json()) as QueueAddRequest;
 
-    if (!body.channel_id || !body.user_id || !body.message_text) {
+    if (!body.channel_id || !body.user_id || !body.text || !body.message_ts || !body.event_type) {
       return NextResponse.json(
-        { success: false, error: 'channel_id, user_id, message_text は必須です' },
+        { success: false, error: 'channel_id, user_id, text, message_ts, event_type は必須です' },
+        { status: 400 }
+      );
+    }
+
+    if (!['new_goal', 'thread_reply'].includes(body.event_type)) {
+      return NextResponse.json(
+        { success: false, error: 'event_type は new_goal または thread_reply が必須です' },
         { status: 400 }
       );
     }

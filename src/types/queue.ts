@@ -6,12 +6,14 @@ export type SlackQueueItem = {
   id: string;
   channel_id: string;
   thread_ts: string | null;
+  message_ts: string;
   user_id: string;
-  message_text: string;
+  text: string;
+  event_type: 'new_goal' | 'thread_reply';
   status: 'pending' | 'processing' | 'completed' | 'failed';
+  session_id: string | null;
   created_at: string;
-  processed_at: string | null;
-  error_message: string | null;
+  updated_at: string;
 };
 
 /**
@@ -28,9 +30,11 @@ export type QueueResponse = {
  */
 export type QueueAddRequest = {
   channel_id: string;
-  thread_ts?: string;
+  thread_ts?: string | null;
+  message_ts: string;
   user_id: string;
-  message_text: string;
+  text: string;
+  event_type: 'new_goal' | 'thread_reply';
 };
 
 /**
@@ -38,5 +42,5 @@ export type QueueAddRequest = {
  */
 export type QueueUpdateRequest = {
   status: 'processing' | 'completed' | 'failed';
-  error_message?: string;
+  session_id?: string;
 };

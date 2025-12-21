@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { SlackMessage } from '@/types/slack';
 import MessageItem from './MessageItem';
+
+const IDLE_TIMEOUT_MS = 5 * 60 * 1000; // 5分
+const COUNTDOWN_SECONDS = 10; // カウントダウン秒数
 
 function isWithin24Hours(ts: string): boolean {
   const seconds = parseFloat(ts);
@@ -13,10 +16,30 @@ function isWithin24Hours(ts: string): boolean {
   return diffMs <= twentyFourHoursMs;
 }
 
-export default function MessageList() {
+function getDateString(ts: string): string {
+  const seconds = parseFloat(ts);
+  const date = new Date(seconds * 1000);
+  return date.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
+
+type Props = {
+  deleteMode: boolean;
+};
+
+export default function MessageList({ deleteMode }: Props) {
   const [messages, setMessages] = useState<SlackMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  const lastActivityRef = useRef<number>(Date.now());
+  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownRef = useRef<number | null>(null);
 
   const fetchMessages = useCallback(async () => {
     try {
@@ -66,6 +89,74 @@ export default function MessageList() {
     fetchMessages();
   }, [fetchMessages]);
 
+  // countdownの状態とrefを同期
+  useEffect(() => {
+    countdownRef.current = countdown;
+  }, [countdown]);
+
+  // アイドル検出とカウントダウン
+  useEffect(() => {
+    const resetActivity = () => {
+      lastActivityRef.current = Date.now();
+      // カウントダウン中ならキャンセル
+      if (countdownRef.current !== null) {
+        setCountdown(null);
+        if (countdownTimerRef.current) {
+          clearInterval(countdownTimerRef.current);
+          countdownTimerRef.current = null;
+        }
+      }
+    };
+
+    const startCountdown = () => {
+      setCountdown(COUNTDOWN_SECONDS);
+      countdownTimerRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === null || prev <= 1) {
+            // カウントダウン終了、再読み込み
+            if (countdownTimerRef.current) {
+              clearInterval(countdownTimerRef.current);
+              countdownTimerRef.current = null;
+            }
+            fetchMessages();
+            lastActivityRef.current = Date.now();
+            return null;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    };
+
+    const checkIdle = () => {
+      const now = Date.now();
+      const elapsed = now - lastActivityRef.current;
+      if (elapsed >= IDLE_TIMEOUT_MS && countdownRef.current === null) {
+        startCountdown();
+      }
+    };
+
+    // アクティビティイベントのリスナー
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
+    events.forEach((event) => {
+      window.addEventListener(event, resetActivity);
+    });
+
+    // 1秒ごとにアイドルチェック
+    idleTimerRef.current = setInterval(checkIdle, 1000);
+
+    return () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, resetActivity);
+      });
+      if (idleTimerRef.current) {
+        clearInterval(idleTimerRef.current);
+      }
+      if (countdownTimerRef.current) {
+        clearInterval(countdownTimerRef.current);
+      }
+    };
+  }, [fetchMessages]);
+
   // 24時間の境界インデックスを計算
   const dividerIndex = useMemo(() => {
     for (let i = 0; i < messages.length; i++) {
@@ -107,24 +198,53 @@ export default function MessageList() {
   }
 
   return (
-    <div className="space-y-4">
-      {messages.map((message, index) => (
-        <div key={message.ts}>
-          {index === dividerIndex && dividerIndex >= 0 && (
-            <div className="flex items-center gap-4 py-4">
-              <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-              <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                24時間以上前
-              </span>
-              <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-            </div>
-          )}
-          <MessageItem
-            message={message}
-            onDelete={() => handleDelete(message.ts)}
-          />
+    <>
+      {/* カウントダウン表示 */}
+      {countdown !== null && (
+        <div className="fixed top-4 right-4 z-50 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg">
+          <span className="text-sm">
+            {countdown}秒後に再読み込み
+          </span>
         </div>
-      ))}
-    </div>
+      )}
+
+      <div className="space-y-4">
+        {messages.map((message, index) => {
+          const currentDate = getDateString(message.ts);
+          const prevDate = index > 0 ? getDateString(messages[index - 1].ts) : null;
+          const showDateDivider = prevDate !== null && prevDate !== currentDate;
+
+          return (
+            <div key={message.ts}>
+              {/* 24時間以上前の区切り */}
+              {index === dividerIndex && dividerIndex >= 0 && (
+                <div className="flex items-center gap-4 py-4">
+                  <div className="flex-1 h-px bg-orange-300 dark:bg-orange-600"></div>
+                  <span className="text-sm text-orange-500 dark:text-orange-400 whitespace-nowrap font-medium">
+                    24時間以上前
+                  </span>
+                  <div className="flex-1 h-px bg-orange-300 dark:bg-orange-600"></div>
+                </div>
+              )}
+              {/* 日付の区切り */}
+              {showDateDivider && (
+                <div className="flex items-center gap-4 py-4">
+                  <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    {currentDate}
+                  </span>
+                  <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+                </div>
+              )}
+              <MessageItem
+                message={message}
+                onDelete={() => handleDelete(message.ts)}
+                deleteMode={deleteMode}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }

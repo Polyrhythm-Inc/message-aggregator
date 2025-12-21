@@ -3,10 +3,12 @@
 import { useState, useMemo, useRef, useEffect, ReactNode } from 'react';
 import { SlackMessage } from '@/types/slack';
 import { extractSlackUrlInfo, SlackUrlInfo } from '@/lib/slack-url-parser';
+import * as emoji from 'node-emoji';
 
 type Props = {
   message: SlackMessage;
   onDelete: () => Promise<void>;
+  deleteMode?: boolean;
 };
 
 function formatTimestamp(ts: string): string {
@@ -33,7 +35,10 @@ function isWithin24Hours(ts: string): boolean {
 
 function formatMessageText(text: string): ReactNode[] {
   // メンションを変換
-  const processed = text.replace(/<@U031ZRTQY>/g, '@柚木仁 (Hitoshi Yunoki)');
+  let processed = text.replace(/<@U031ZRTQY>/g, '@柚木仁 (Hitoshi Yunoki)');
+
+  // Slack emoticonを絵文字に変換（:emoji_name: 形式）
+  processed = emoji.emojify(processed);
 
   // URLを検出してリンク化
   const urlRegex = /https?:\/\/[^\s<>]+/g;
@@ -42,6 +47,32 @@ function formatMessageText(text: string): ReactNode[] {
   let match;
 
   while ((match = urlRegex.exec(processed)) !== null) {
+    let url = match[0];
+    let trailingChars = '';
+
+    // 末尾の句読点や閉じ括弧を除去
+    // ただし、対応する開き括弧がURL内にある場合は閉じ括弧を残す
+    while (url.length > 0) {
+      const lastChar = url[url.length - 1];
+      if (lastChar === ')') {
+        // URL内の開き括弧と閉じ括弧の数を比較
+        const openCount = (url.match(/\(/g) || []).length;
+        const closeCount = (url.match(/\)/g) || []).length;
+        if (closeCount > openCount) {
+          // 閉じ括弧が多い場合は末尾の閉じ括弧を除去
+          trailingChars = lastChar + trailingChars;
+          url = url.slice(0, -1);
+        } else {
+          break;
+        }
+      } else if (['.', ',', ';', '!', '?', "'", '"', ']', '}'].includes(lastChar)) {
+        trailingChars = lastChar + trailingChars;
+        url = url.slice(0, -1);
+      } else {
+        break;
+      }
+    }
+
     // URL前のテキスト
     if (match.index > lastIndex) {
       result.push(processed.slice(lastIndex, match.index));
@@ -50,14 +81,18 @@ function formatMessageText(text: string): ReactNode[] {
     result.push(
       <a
         key={match.index}
-        href={match[0]}
+        href={url}
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 dark:text-blue-400 hover:underline break-all"
       >
-        {match[0]}
+        {url}
       </a>
     );
+    // 除去した末尾の文字をテキストとして追加
+    if (trailingChars) {
+      result.push(trailingChars);
+    }
     lastIndex = urlRegex.lastIndex;
   }
 
@@ -69,7 +104,7 @@ function formatMessageText(text: string): ReactNode[] {
   return result.length > 0 ? result : [processed];
 }
 
-export default function MessageItem({ message, onDelete }: Props) {
+export default function MessageItem({ message, onDelete, deleteMode = false }: Props) {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -96,7 +131,8 @@ export default function MessageItem({ message, onDelete }: Props) {
   const canReply = slackUrlInfo !== null;
 
   const handleDeleteClick = () => {
-    if (confirming) {
+    if (deleteMode || confirming) {
+      // 削除モードの場合は即削除、確認中の場合も削除
       setDeleting(true);
       onDelete().finally(() => {
         setDeleting(false);
@@ -162,6 +198,11 @@ export default function MessageItem({ message, onDelete }: Props) {
             <span className="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">
               メール
             </span>
+            {message.email.to && (
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                To: {message.email.to}
+              </span>
+            )}
             <span className="text-sm text-gray-500 dark:text-gray-400">
               From: {message.email.from}
             </span>

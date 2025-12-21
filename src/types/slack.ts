@@ -111,6 +111,7 @@ export type SlackMessage = {
     subject: string;
     body: string;
     from: string;
+    to?: string;
   };
 };
 

@@ -59,12 +59,18 @@ export async function handleAiOrgMention(slackWebhook: SlackWebhook): Promise<bo
       return false;
     }
 
+    // イベントタイプを判定（スレッド返信か新規ゴールか）
+    const isThreadReply = !!event.thread_ts && event.thread_ts !== event.ts;
+    const eventType = isThreadReply ? 'thread_reply' : 'new_goal';
+
     // Queueに追加
     const queueItem = await addToQueue({
       channel_id: event.channel,
-      thread_ts: event.thread_ts || event.ts,
+      thread_ts: event.thread_ts || null,
+      message_ts: event.ts,
       user_id: event.user || 'unknown',
-      message_text: cleanedText,
+      text: cleanedText,
+      event_type: eventType,
     });
 
     logger.info(

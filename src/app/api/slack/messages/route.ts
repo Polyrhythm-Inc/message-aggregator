@@ -174,14 +174,22 @@ export async function GET(request: NextRequest) {
         subject?: string;
         plain_text?: string;
         from?: Array<{ address?: string; name?: string }>;
+        to?: Array<{ address?: string; name?: string }>;
       }> | undefined;
 
       const emailFile = files?.find((f) => f.filetype === 'email');
+      const formatEmailAddress = (entry?: { address?: string; name?: string }) => {
+        if (!entry) return undefined;
+        const { name, address } = entry;
+        if (name && address) return `${name} <${address}>`;
+        return name || address;
+      };
       const email = emailFile
         ? {
             subject: emailFile.subject || '(件名なし)',
             body: emailFile.plain_text || '',
-            from: emailFile.from?.[0]?.name || emailFile.from?.[0]?.address || '不明',
+            from: formatEmailAddress(emailFile.from?.[0]) || '不明',
+            to: formatEmailAddress(emailFile.to?.[0]),
           }
         : undefined;
 
