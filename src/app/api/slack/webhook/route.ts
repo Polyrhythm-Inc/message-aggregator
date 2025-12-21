@@ -10,6 +10,7 @@ import {
   generateTaskTitle,
 } from '../../../../lib/task-server';
 import { ExternalSlackWebhookHandler } from '@/lib/external-slack-webhook-handler';
+import { handleAiOrgMention } from '../../../../lib/ai-org-queue-handler';
 
 const ALERT_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
 
@@ -30,6 +31,17 @@ export async function POST(request: NextRequest) {
     if (slackWebhook.type === 'event_callback') {
       await ExternalSlackWebhookHandler.handleWebhook(slackWebhook);
       logger.info('Slackイベントを正常に処理しました');
+
+      // ai-orgボットへのメンションをQueue処理（非同期）
+      handleAiOrgMention(slackWebhook).catch((error) => {
+        logger.error(
+          {
+            errorMessage: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          },
+          'ai-org Queue処理でエラーが発生しました'
+        );
+      });
 
       processSlackEvent(slackWebhook).catch((error) => {
         logger.error(
