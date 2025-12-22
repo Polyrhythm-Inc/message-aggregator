@@ -6,7 +6,8 @@
     "dev": "cd src && npm run dev",
     "build": "cd src && npm run build",
     "start": "cd src && npm run start",
-    "postinstall": "cd src && npm install"
+    "postinstall": "cd src && npm install",
+    "heroku-postbuild": "cd src && npm ci && npm run build"
   },
   "engines": {
     "node": "20.x"

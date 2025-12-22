@@ -1,0 +1,14 @@
+
+> message-aggregator@1.0.0 start
+> cd src && npm run start
+
+
+> src@0.1.0 start
+> next start
+
+   ▲ Next.js 15.3.5
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.250:3000
+
+ ✓ Starting...
+ ✓ Ready in 660ms
