@@ -36,5 +36,5 @@ fi
 
 # アプリケーションを起動（ポート5100で）
 echo "$(date): Starting Message Aggregator on port $PORT..." >> "$LOG_DIR/startup.log"
-export PORT=$PORT
-exec npm run start -- -p $PORT >> "$LOG_DIR/app.log" 2>&1
+cd "$PROJECT_DIR/src"
+exec npx next start -p $PORT >> "$LOG_DIR/app.log" 2>&1

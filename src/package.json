@@ -13,8 +13,11 @@
     "@slack/web-api": "^7.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.11.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.3.5",
     "next": "15.3.5",
     "node-emoji": "^2.2.0",
     "pg": "^8.13.0",
@@ -26,9 +29,6 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@types/pg": "^8.11.0",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.5",
     "pino-pretty": "^10.0.0"
   }
 }
