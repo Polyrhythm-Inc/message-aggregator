@@ -70,6 +70,7 @@ export async function GET() {
   return NextResponse.json({ message: 'Slack Webhook API is running' });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   logger.debug({ slackWebhook }, 'processSlackEvent');
   const event = slackWebhook.event;
