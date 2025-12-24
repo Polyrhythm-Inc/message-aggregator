@@ -43,15 +43,15 @@ export async function POST(request: NextRequest) {
         );
       });
 
-      processSlackEvent(slackWebhook).catch((error) => {
-        logger.error(
-          {
-            errorMessage: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined,
-          },
-          'Slackイベントの非同期処理でエラーが発生しました'
-        );
-      });
+      // processSlackEvent(slackWebhook).catch((error) => {
+      //   logger.error(
+      //     {
+      //       errorMessage: error instanceof Error ? error.message : String(error),
+      //       stack: error instanceof Error ? error.stack : undefined,
+      //     },
+      //     'Slackイベントの非同期処理でエラーが発生しました'
+      //   );
+      // });
       logger.info('Slackイベントの非同期処理を開始しました');
     }
 
