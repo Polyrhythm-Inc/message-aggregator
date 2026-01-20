@@ -1,0 +1,261 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - heading "Message aggregator" [level=1] [ref=e5]
+        - generic [ref=e6]:
+          - button "再読み込み" [ref=e7]:
+            - img [ref=e8]
+          - link "プロジェクト管理" [ref=e10] [cursor=pointer]:
+            - /url: /projects
+            - img [ref=e11]
+          - button "Debug" [ref=e13]
+          - button "削除OFF" [ref=e14]
+    - generic [ref=e16]:
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - generic [ref=e21]: 01/15 11:44
+            - button "外部連携" [ref=e23]:
+              - img [ref=e24]
+              - generic [ref=e26]: 外部連携
+              - img [ref=e27]
+            - button "担当者登録" [ref=e30]:
+              - img [ref=e31]
+              - generic [ref=e33]: 担当者登録
+          - generic [ref=e34]:
+            - button "AI" [ref=e35]
+            - button "和訳" [ref=e36]
+            - button "削除" [ref=e37]
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - generic [ref=e40]: メール
+            - generic [ref=e41]: "To: Hitoshi Yunoki <yunoki@porhy.com>"
+            - generic [ref=e42]: "From: LinkedIn <messages-noreply@linkedin.com>"
+          - paragraph [ref=e43]: Your turn, Hitoshi 🏆
+          - paragraph [ref=e44]:
+            - text: "1 connection already solved LinkedIn puzzle games LinkedIn games offer quick, daily puzzles designed to help you recharge and refocus. 30s break! - Zip Connect the dots in order and see how quickly you can fill the grid. Solve:"
+            - link "https://www.linkedin.com/comm/games/zip?lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-null-0-null&trkEmail=eml-email_games_discovery_social-null-0-null-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw" [ref=e45] [cursor=pointer]:
+              - /url: https://www.linkedin.com/comm/games/zip?lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-null-0-null&trkEmail=eml-email_games_discovery_social-null-0-null-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw
+            - text: "3 min break! - Queens Use your logic skills to place the queens. Solve:"
+            - link "https://www.linkedin.com/comm/games/queens?lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-null-0-null&trkEmail=eml-email_games_discovery_social-null-0-null-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw" [ref=e46] [cursor=pointer]:
+              - /url: https://www.linkedin.com/comm/games/queens?lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-null-0-null&trkEmail=eml-email_games_discovery_social-null-0-null-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw
+            - text: "---------------------------------------- This email was intended for Hitoshi Yunoki (Natural-born developer. CEO of Polyrhythm Inc.) Learn why we included this:"
+            - link "https://www.linkedin.com/help/linkedin/answer/4788?lang=en&lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-SecurityHelp-0-textfooterglimmer&trkEmail=eml-email_games_discovery_social-SecurityHelp-0-textfooterglimmer-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw" [ref=e47] [cursor=pointer]:
+              - /url: https://www.linkedin.com/help/linkedin/answer/4788?lang=en&lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-SecurityHelp-0-textfooterglimmer&trkEmail=eml-email_games_discovery_social-SecurityHelp-0-textfooterglimmer-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw
+            - text: "You are receiving LinkedIn notification emails. Unsubscribe:"
+            - link "https://www.linkedin.com/comm/psettings/email-unsubscribe?lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-unsubscribe-0-textfooterglimmer&trkEmail=eml-email_games_discovery_social-unsubscribe-0-textfooterglimmer-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw&loid=AQEfVmsfor-m_wAAAZu_iiP7i5MGX8pRBmtlAawcEzRYiG89wJPlGAH_tyLWO2fPoBf2JsEBJKjqEtmV4tkrXsRpwg" [ref=e48] [cursor=pointer]:
+              - /url: https://www.linkedin.com/comm/psettings/email-unsubscribe?lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-unsubscribe-0-textfooterglimmer&trkEmail=eml-email_games_discovery_social-unsubscribe-0-textfooterglimmer-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw&loid=AQEfVmsfor-m_wAAAZu_iiP7i5MGX8pRBmtlAawcEzRYiG89wJPlGAH_tyLWO2fPoBf2JsEBJKjqEtmV4tkrXsRpwg
+            - text: "Help:"
+            - link "https://www.linkedin.com/help/linkedin/answer/67?lang=en&lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-help-0-textfooterglimmer&trkEmail=eml-email_games_discovery_social-help-0-textfooterglimmer-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw" [ref=e49] [cursor=pointer]:
+              - /url: https://www.linkedin.com/help/linkedin/answer/67?lang=en&lipi=urn%3Ali%3Apage%3Aemail_email_games_discovery_social%3BMfoDbouWRpea6s09HGzlFg%3D%3D&midToken=AQGivZ66TeG_Kg&midSig=28tmSyh9gALs41&trk=eml-email_games_discovery_social-help-0-textfooterglimmer&trkEmail=eml-email_games_discovery_social-help-0-textfooterglimmer-null-svror~mkesidov~vw-null-null&eid=svror-mkesidov-vw
+            - text: © 2026 LinkedIn Corporation, 1zwnj000 West Maude Avenue, Sunnyvale, CA 94085. LinkedIn and the LinkedIn logo are registered trademarks of LinkedIn.
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - generic [ref=e53]:
+            - generic [ref=e54]: 01/15 11:37
+            - button "外部連携" [ref=e56]:
+              - img [ref=e57]
+              - generic [ref=e59]: 外部連携
+              - img [ref=e60]
+            - button "担当者登録" [ref=e63]:
+              - img [ref=e64]
+              - generic [ref=e66]: 担当者登録
+          - generic [ref=e67]:
+            - button "AI" [ref=e68]
+            - button "和訳" [ref=e69]
+            - button "削除" [ref=e70]
+            - button "返信" [ref=e71]
+            - button "😀" [ref=e73]
+        - paragraph [ref=e75]:
+          - text: "濱本寅之（Torayuki Hamamoto）さんからのメッセージ: おー、ありがとうございます！ <"
+          - link "https://polyrhythm.slack.com/archives/C095LH91TDG/p1768444619630439?thread_ts=1765710887.234609&amp;cid=C095LH91TDG" [ref=e76] [cursor=pointer]:
+            - /url: https://polyrhythm.slack.com/archives/C095LH91TDG/p1768444619630439?thread_ts=1765710887.234609&amp;cid=C095LH91TDG
+          - text: ">"
+      - generic [ref=e79] [cursor=pointer]:
+        - generic [ref=e80]:
+          - button [ref=e81]:
+            - img [ref=e82]
+          - generic [ref=e84]:
+            - generic [ref=e85]:
+              - generic [ref=e86]: 2件
+              - generic [ref=e87]: 01/15 10:51
+            - paragraph [ref=e88]: "daisuke-shindoさんからのメッセージ:"
+        - button "2件削除" [ref=e89]
+      - generic [ref=e92] [cursor=pointer]:
+        - generic [ref=e93]:
+          - button [ref=e94]:
+            - img [ref=e95]
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - generic [ref=e99]: 11件
+              - generic [ref=e100]: 01/15 10:41
+            - paragraph [ref=e101]: "shohojiさんからのメッセージ:"
+        - button "11件削除" [ref=e102]
+      - generic [ref=e104]:
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - generic [ref=e107]: 01/15 09:33
+            - button "外部連携" [ref=e109]:
+              - img [ref=e110]
+              - generic [ref=e112]: 外部連携
+              - img [ref=e113]
+            - button "担当者登録" [ref=e116]:
+              - img [ref=e117]
+              - generic [ref=e119]: 担当者登録
+          - generic [ref=e120]:
+            - button "AI" [ref=e121]
+            - button "和訳" [ref=e122]
+            - button "削除" [ref=e123]
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: メール
+            - generic [ref=e127]: "To: yunoki@polyrhythm.jp"
+            - generic [ref=e128]: "From: note <noreply@note.com>"
+          - paragraph [ref=e129]: 【徹底解説】agent-browser完全ガイド｜Vercel発AIエージェント向けブラウザ自動化CLI
+          - paragraph [ref=e130]: まさお@未経験からプロま…さんの新作が届きました フォロー中のクリエイターの新作です！ まさお@未経験からプロまでAI活用 【徹底解説】agent-browser完全ガイド｜Vercel発AIエージェント向けブラウザ自動化CLI 15 配信停止 ヘルプ / プライバシーポリシー / 利用規約 © note inc.
+      - generic [ref=e132]:
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - generic [ref=e135]: 01/15 09:32
+            - button "外部連携" [ref=e137]:
+              - img [ref=e138]
+              - generic [ref=e140]: 外部連携
+              - img [ref=e141]
+            - button "担当者登録" [ref=e144]:
+              - img [ref=e145]
+              - generic [ref=e147]: 担当者登録
+          - generic [ref=e148]:
+            - button "AI" [ref=e149]
+            - button "和訳" [ref=e150]
+            - button "削除" [ref=e151]
+        - paragraph [ref=e153]:
+          - text: "**Chatwork Message** From: TSUCHIYA-lea- Room: 323390484 Message ID: [2063444792045744128](<"
+          - link "https://www.chatwork.com/#!rid323390484-2063444792045744128" [ref=e154] [cursor=pointer]:
+            - /url: https://www.chatwork.com/#!rid323390484-2063444792045744128
+          - text: ">) [To:546780]柚木 仁 Hitoshi Yunokiさん 監修完了ポップアップパターン <"
+          - link "https://miro.com/app/board/uXjVN_AF2BQ=/?moveToWidget=3458764653759988261&amp;cot=14" [ref=e155] [cursor=pointer]:
+            - /url: https://miro.com/app/board/uXjVN_AF2BQ=/?moveToWidget=3458764653759988261&amp;cot=14
+          - text: ">"
+      - generic [ref=e157]:
+        - generic [ref=e158]:
+          - generic [ref=e159]:
+            - generic [ref=e160]: 01/15 00:57
+            - button "外部連携" [ref=e162]:
+              - img [ref=e163]
+              - generic [ref=e165]: 外部連携
+              - img [ref=e166]
+            - button "担当者登録" [ref=e169]:
+              - img [ref=e170]
+              - generic [ref=e172]: 担当者登録
+          - generic [ref=e173]:
+            - button "AI" [ref=e174]
+            - button "和訳" [ref=e175]
+            - button "削除" [ref=e176]
+        - generic [ref=e177]:
+          - generic [ref=e178]:
+            - generic [ref=e179]: メール
+            - generic [ref=e180]: "To: yunoki@polyrhythm.jp"
+            - generic [ref=e181]: "From: 42Crunch <mark.dolan@42crunch.com>"
+          - paragraph [ref=e182]: 42Crunch launches API Contract Generator in the IDE for automatic OpenAPI Generation
+          - paragraph [ref=e183]:
+            - text: "[View in browser]("
+            - link "https://bmwt7.r.ag.d.sendibm3.com/mk/mr/sh/1t6AVsd2XFnIGADCINb0AfxU8tKmZi/8o_2XtkiN-rE" [ref=e184] [cursor=pointer]:
+              - /url: https://bmwt7.r.ag.d.sendibm3.com/mk/mr/sh/1t6AVsd2XFnIGADCINb0AfxU8tKmZi/8o_2XtkiN-rE
+            - text: ") Introducing API Contract Generator in IDEs ========================================== u42Crunch, the #1 API Security platform company, announced today the availability of [API Contract Generator,]("
+            - link "https://bmwt7.r.ag.d.sendibm3.com/mk/cl/f/sh/1t6Af4OiGsDg0aZYLa7XQ4pm1IRYGc/oZexZFYfvN4-" [ref=e185] [cursor=pointer]:
+              - /url: https://bmwt7.r.ag.d.sendibm3.com/mk/cl/f/sh/1t6Af4OiGsDg0aZYLa7XQ4pm1IRYGc/oZexZFYfvN4-
+            - text: ") a new feature inside the 42Crunch OpenAPI Editor extension in leading IDEs e.g. VS Code, Jetbrains etc Designed to reduce time spent by developers on repetitive manual tasks and improve the quality of OpenAPI documentation, this new feature enables users to automatically generate OpenAPI contracts from your existing Postman Collections and HAR files (recorded web traffic to the API). With over 2 million developers already using 42Crunch, this latest addition to the 42Crunch feature set means IDE users can now share quality OpenAPI contracts with internal and external teams and ultimately deliver secure API-based services quicker to market. Some additional benefits of the tool: - Allows users to generate API specifications from scratch - Includes patterns from data dictionaries - Streamlines the API design process - Helps maintain consistency across API definitions This new tool is available by default to all current Freemium users, single developer paid users and 42Crunch platform users. Free 42Crunch OpenAPI editor users just need to register for [freemium]("
+            - link "https://bmwt7.r.ag.d.sendibm3.com/mk/cl/f/sh/1t6Af4OiGsE8LIlyjwDSaKtbP7QHyg/mRf7Wn2Ku9SZ" [ref=e186] [cursor=pointer]:
+              - /url: https://bmwt7.r.ag.d.sendibm3.com/mk/cl/f/sh/1t6Af4OiGsE8LIlyjwDSaKtbP7QHyg/mRf7Wn2Ku9SZ
+            - text: ) to start using this feature. To access the API Contract Generator, upgrade the 42Crunch OpenAPI Editor extension in your preferred IDE to version 5.0 and click on the 42C icon side panel (as per screenshot below). Some IDEs take longer to show newer version than others. Free monthly limits are set at 100 operations a month, similar to API Contract Audit and API Security Scan tools. Usage can be viewed in the API Contract Generator start screen. [Paid upgrades](
+            - link "https://bmwt7.r.ag.d.sendibm3.com/mk/cl/f/sh/1t6Af4OiGsEag0yP8IJNkaxQmwP1gk/W5BnKP4cPL33" [ref=e187] [cursor=pointer]:
+              - /url: https://bmwt7.r.ag.d.sendibm3.com/mk/cl/f/sh/1t6Af4OiGsEag0yP8IJNkaxQmwP1gk/W5BnKP4cPL33
+            - text: ) are available for users requiring higher allowances. Helping you secure your APIs! Your 42Crunch Team San Francisco | London | Dublin | Montpellier | Sydney 42Crunch Inc., 95 Third Street, 2nd Floor, San Francisco, CA 94103, United States, 4152503038 [Unsubscribe](
+            - link "https://bmwt7.r.ag.d.sendibm3.com/mk/un/v2/sh/1t6AVsdYhqSR1hPooqjabaFLiqAs0k/tdu_nNQ_e2fh" [ref=e188] [cursor=pointer]:
+              - /url: https://bmwt7.r.ag.d.sendibm3.com/mk/un/v2/sh/1t6AVsdYhqSR1hPooqjabaFLiqAs0k/tdu_nNQ_e2fh
+            - text: )
+      - generic [ref=e189]:
+        - generic [ref=e192]: 2026/01/14
+        - generic [ref=e194]:
+          - generic [ref=e195]:
+            - generic [ref=e196]:
+              - generic [ref=e197]: 01/14 18:50
+              - button "外部連携" [ref=e199]:
+                - img [ref=e200]
+                - generic [ref=e202]: 外部連携
+                - img [ref=e203]
+              - button "担当者登録" [ref=e206]:
+                - img [ref=e207]
+                - generic [ref=e209]: 担当者登録
+            - generic [ref=e210]:
+              - button "AI" [ref=e211]
+              - button "和訳" [ref=e212]
+              - button "削除" [ref=e213]
+          - paragraph [ref=e214]: (内容なし)
+          - generic [ref=e215]:
+            - generic [ref=e216]:
+              - img [ref=e217]
+              - generic [ref=e219]: 添付ファイル (1)
+            - button "yunoki@reludens.jp_credentials.csv" [ref=e221]:
+              - img [ref=e222]
+              - generic [ref=e224]: yunoki@reludens.jp_credentials.csv
+      - generic [ref=e226]:
+        - generic [ref=e227]:
+          - generic [ref=e228]:
+            - generic [ref=e229]: 01/14 18:50
+            - button "外部連携" [ref=e231]:
+              - img [ref=e232]
+              - generic [ref=e234]: 外部連携
+              - img [ref=e235]
+            - button "担当者登録" [ref=e238]:
+              - img [ref=e239]
+              - generic [ref=e241]: 担当者登録
+          - generic [ref=e242]:
+            - button "AI" [ref=e243]
+            - button "和訳" [ref=e244]
+            - button "削除" [ref=e245]
+        - paragraph [ref=e247]: csvファイルが、グッデイAWSのdev環境の柚木さんのログイン情報です。 とりあえず柚木さんのアカウントは、スイッチロールでdev環境から、stg/prdなどの環境へ切り替えれるように設定済みです。 アカウントとスイッチロールなどが問題ないか確認お願いします。 ロール切り替えの情報 008333622001 Role-Dev-Admin 681949398847 Role-Stg-Admin 030046728352 Role-Prd-Admin
+      - generic [ref=e250] [cursor=pointer]:
+        - generic [ref=e251]:
+          - button [ref=e252]:
+            - img [ref=e253]
+          - generic [ref=e255]:
+            - generic [ref=e256]:
+              - generic [ref=e257]: 3件
+              - generic [ref=e258]: 01/14 18:30
+            - paragraph [ref=e259]: "From: 棟元政惟"
+        - button "3件削除" [ref=e260]
+      - generic [ref=e262]:
+        - generic [ref=e263]:
+          - generic [ref=e264]:
+            - generic [ref=e265]: 01/14 17:04
+            - button "外部連携" [ref=e267]:
+              - img [ref=e268]
+              - generic [ref=e270]: 外部連携
+              - img [ref=e271]
+            - button "担当者登録" [ref=e274]:
+              - img [ref=e275]
+              - generic [ref=e277]: 担当者登録
+          - generic [ref=e278]:
+            - button "AI" [ref=e279]
+            - button "和訳" [ref=e280]
+            - button "削除" [ref=e281]
+            - button "返信" [ref=e282]
+            - button "😀" [ref=e284]
+        - paragraph [ref=e286]:
+          - text: "山本映子 (Eiko Yamamoto)さんからのメッセージ: @柚木仁（Hitoshi Yunoki） おつかれさまです！ 確認させてください。少し記憶があいまいになってしまったので、教えていただけると助かります。 <"
+          - link "https://miro.com/app/board/uXjVN_AF2BQ=/?moveToWidget=3458764576344224895&amp;cot=14|監修画面" [ref=e287] [cursor=pointer]:
+            - /url: https://miro.com/app/board/uXjVN_AF2BQ=/?moveToWidget=3458764576344224895&amp;cot=14|監修画面
+          - text: ">に表示されているバッジについて、それぞれどのような意味（状態）を表しているかの認識を確認したいです。 ・サイドバー／タブ／「デザイン」「本体」（サブメニュー？）に付いている、赤・青の小さな丸 ・サイドバーの「監修ルーム」「画像」などに表示されている、オレンジ・赤・青の数字入りバッジ お手数ですが、簡単にで大丈夫なので教えていただけると嬉しいです！ <"
+          - link "https://polyrhythm.slack.com/archives/C09V38QSUSK/p1768377864068699?thread_ts=1768356501.881199&amp;cid=C09V38QSUSK" [ref=e288] [cursor=pointer]:
+            - /url: https://polyrhythm.slack.com/archives/C09V38QSUSK/p1768377864068699?thread_ts=1768356501.881199&amp;cid=C09V38QSUSK
+          - text: "> 📎 バッジ.png: <"
+          - link "https://polyrhythm.slack.com/files/U039V4PBNUX/F0A85NTGM7Z/_________.png" [ref=e289] [cursor=pointer]:
+            - /url: https://polyrhythm.slack.com/files/U039V4PBNUX/F0A85NTGM7Z/_________.png
+          - text: ">"
+  - alert [ref=e290]
+```

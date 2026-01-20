@@ -1,0 +1,93 @@
+=== Gemini API モーダル表示テスト ===
+開始時刻: 2025/12/27 19:08:58
+
+1. ページにアクセス中...
+   スクリーンショット保存: reports/01-initial-page.png
+2. メッセージ一覧を確認中...
+3. 自動設定ボタンを検索中...
+   自動設定ボタンを発見しました
+   スクリーンショット保存: reports/02-before-click.png
+4. 自動設定ボタンをクリック...
+5. APIレスポンスを待機中（最大60秒）...
+   ✅ モーダルが表示されました
+   スクリーンショット保存: reports/03-modal-visible.png
+6. 送信プロンプトセクションを確認...
+   送信プロンプトセクションが存在します
+   送信プロンプトを展開中...
+   スクリーンショット保存: reports/04-prompt-expanded.png
+7. プロンプト内容を取得...
+   プロンプト内容を取得しました
+
+=== プロンプト内容 ===
+以下のメッセージを分析し、最も適切なプロジェクトを選択してください。
+
+【メッセージ】
+Tactiq: 作業用Meet
+Hi 柚木仁,
+
+
+Your transcript is ready!
+=========================
+
+
+ 
+
+
+作業用Meet has been securely saved. Generate a meeting summary or action items in a single click. Highlight key moments, leave comments and share this meeting.
+
+
+[ Open the transcript](https://app.tactiq.io/?utm_source=tactiq-product&utm_medium=transcript-notification&utm_campaign=email&utm_content=transcript-notification#/transcripts/8bFUtGlKxdX4HhKz5WyD)
+
+
+
+
+[Rate us on Chrome Web Store](https://chromewebstore.google.com/detail/tactiq-chatgpt-meeting-su/fggkaccpbmombhnjkjokndojfgagejfb/reviews?utm_source=email&utm_medium=transcript-notification&utm_campaign=rate-us) 👈
+
+
+Warmest regards,
+The Tactiq team
+
+
+**Turning meeting context into exceptional outcomes**
+
+
+Sent with ❤️ from Tactiq
+
+Level 33, 264 George Street, Sydney, NSW 2000, Australia
+
+Questions? Reach out to support [here](mailto:support@tactiq.io)
+
+
+[View in browser](https://r.mailsib.tactiq.io/tr/mr/N2MS1sNmNOmse0HgfWA-LOI1RpMWD9qJwrfRodl8PSk6PPkmh1B-Q8g9qLsbyK0Nxm-fhzPoYQTN1xmDa9rj8atkQPic-rEqbX_zc634tZGKqG_41kEhbEUSTBMywjAzv_btQLtMZ9Bb5VHdko0HdupR8vyk3eywPXLscXYHQIqk_jpYpjzlxqtiYLimlxehsdmSfA6uMFS9HlXEcAxyAj6khfH0PJvxpedoyE2n) | [Unsubscribe](https://r.mailsib.tactiq.io/tr/un/UG_ttLq0RgGmiiaS_yz2KRaOVRnle8Wj7XlxxtP-u8zl1yi3JpRi2qKnFxxmPb1gGbxON_soHAgvwuTqqP76YzkIsXmT_fei4h8S4v4xYVVT14tu0egCZ1K__rxvcS4z_WopT_t7amhAm8dqspdVfauNru5reCbt9MSPGkI1bBMnIJ_ovaLNbpLh6_lhRVxpGLTxAHbP3UjlQs7LLBI-ZS1Bit2NMdPptA4kAe_rZS1dR-mdWlrMCmuAt2fjAeu__j4tCBjrXlKN)
+
+【プロジェクト候補】
+- id:f57a4661-d80a-4483-bad5-129e1ae37be0 name:スタディGO
+- id:294d7854-7318-47dd-a946-a7a28e606c69 name:ポイ活
+- id:2727cc73-a897-4df5-923c-a2da1f379edd name:IPステーション
+- id:5ec5e71d-036e-43dd-8415-f23be1dc764b name:レベラボ
+- id:f338a71f-683d-4916-8a72-73ff705a14ad name:AIエージェントチーム
+
+【出力形式】
+以下のJSON形式で出力してください（JSONのみ、他の説明は不要）：
+```json
+{
+  "projectId": "選択したプロジェクトのID（該当なしの場合はnull）",
+  "confidence": 0-100の確信度,
+  "reason": "選択理由（日本語で簡潔に）"
+}
+```
+
+【判断基準】
+1. メッセージにプロジェクト名が直接含まれている場合は高確信度（80-100）
+2. プロジェクトの説明と関連するキーワードがある場合は中確信度（50-79）
+3. 明確な関連性がない場合はnullを返す
+======================
+
+   最終スクリーンショット保存: reports/05-final-modal.png
+
+=== 検証結果 ===
+✅ プロンプトが表示されています
+✅ プロンプト形式が正しいです
+
+=== テスト完了 ===
+終了時刻: 2025/12/27 19:09:11

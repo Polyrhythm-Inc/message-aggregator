@@ -1,0 +1,15 @@
+{
+  "name": "message-aggregator",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cd src && npm run dev",
+    "build": "cd src && npm run build",
+    "start": "cd src && npm run start",
+    "postinstall": "cd src && npm install",
+    "heroku-postbuild": "cd src && npm ci && npm run build"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+} 

@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment and secrets
+.env
+.env.local
+*.token.json
+
+# launchd plist with secrets (use .example template)
+launchd/com.user.gmail-slack-forwarder.plist
+
+# Reports (auto-generated)
+reports/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store

@@ -1,0 +1,147 @@
+name: Deploy to Heroku
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deploy environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment || 'production' }}
+    permissions:
+      contents: write
+      actions: read
+      packages: read
+      repository-projects: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      DEPLOYMENT_API_URL: ${{ secrets.DEPLOYMENT_API_URL }}
+      DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up GitHub Token for private repo access
+        run: echo "Using GitHub token for organization private repo access"
+
+      - name: Install Heroku CLI
+        run: |
+          wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+          echo "/usr/local/bin/heroku" >> $GITHUB_PATH
+
+      - name: Setup deployment environment
+        id: setup
+        run: |
+          ENVIRONMENT="${{ github.event.inputs.environment || 'production' }}"
+          echo "DEPLOY_ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
+
+          APP_NAME="${{ secrets.HEROKU_APP_NAME }}"
+          if [ "${ENVIRONMENT}" = "staging" ] && [ -n "${{ secrets.HEROKU_APP_NAME_STAGING }}" ]; then
+            APP_NAME="${{ secrets.HEROKU_APP_NAME_STAGING }}"
+          elif [ "${ENVIRONMENT}" = "development" ] && [ -n "${{ secrets.HEROKU_APP_NAME_DEVELOPMENT }}" ]; then
+            APP_NAME="${{ secrets.HEROKU_APP_NAME_DEVELOPMENT }}"
+          fi
+
+          if [ -z "${APP_NAME}" ]; then
+            echo "Heroku app name is not configured for ${ENVIRONMENT} environment." >&2
+            exit 1
+          fi
+
+          echo "HEROKU_APP_NAME=${APP_NAME}" >> $GITHUB_ENV
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          cat >~/.netrc <<EOF
+          machine api.heroku.com
+            login api
+            password ${HEROKU_API_KEY}
+          machine git.heroku.com
+            login api
+            password ${HEROKU_API_KEY}
+          EOF
+          chmod 600 ~/.netrc
+
+          git config user.name "Heroku Deploy"
+          git config user.email "dev@porhy.com"
+
+          heroku git:remote -a "${HEROKU_APP_NAME}"
+
+          git push heroku main:main --force
+
+      - name: Record deployment success
+        if: success() && env.DEPLOYMENT_API_URL && env.DEPLOYMENT_API_KEY
+        env:
+          DEPLOYMENT_API_URL: ${{ secrets.DEPLOYMENT_API_URL }}
+          DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
+        run: |
+          curl -X POST "${{ secrets.DEPLOYMENT_API_URL }}/api/external/deployments" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "applicationName": "message-aggregator.polyrhythm.tokyo",
+              "environment": "${{ github.event.inputs.environment || 'production' }}",
+              "version": "${{ github.ref_name }}",
+              "commitHash": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "tag": "${{ github.ref_name }}",
+              "deployedBy": "github-actions",
+              "status": "SUCCESS",
+              "workflowRunId": "${{ github.run_id }}",
+              "jobId": "${{ github.job }}",
+              "notes": "Heroku deployment via GitHub Actions",
+              "metadata": {
+                "repository": "${{ github.repository }}",
+                "actor": "${{ github.actor }}",
+                "platform": "heroku",
+                "appName": "${{ env.HEROKU_APP_NAME }}"
+              }
+            }'
+
+      - name: Record deployment failure
+        if: failure() && env.DEPLOYMENT_API_URL && env.DEPLOYMENT_API_KEY
+        env:
+          DEPLOYMENT_API_URL: ${{ secrets.DEPLOYMENT_API_URL }}
+          DEPLOYMENT_API_KEY: ${{ secrets.DEPLOYMENT_API_KEY }}
+        run: |
+          curl -X POST "${{ secrets.DEPLOYMENT_API_URL }}/api/external/deployments" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOYMENT_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "applicationName": "message-aggregator.polyrhythm.tokyo",
+              "environment": "${{ github.event.inputs.environment || 'production' }}",
+              "version": "${{ github.ref_name }}",
+              "commitHash": "${{ github.sha }}",
+              "branch": "${{ github.ref_name }}",
+              "tag": "${{ github.ref_name }}",
+              "deployedBy": "github-actions",
+              "status": "FAILED",
+              "workflowRunId": "${{ github.run_id }}",
+              "jobId": "${{ github.job }}",
+              "notes": "Heroku deployment failed via GitHub Actions",
+              "metadata": {
+                "repository": "${{ github.repository }}",
+                "actor": "${{ github.actor }}",
+                "platform": "heroku",
+                "appName": "${{ env.HEROKU_APP_NAME }}"
+              }
+            }'

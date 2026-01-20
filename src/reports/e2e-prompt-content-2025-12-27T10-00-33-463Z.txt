@@ -1,0 +1,185 @@
+=== E2Eテスト結果 ===
+
+テスト日時: 2025/12/27 19:00:33
+
+=== APIリクエスト ===
+{
+  "ts": "1766829608.368289",
+  "message": "Tactiq: 作業用Meet\nHi 柚木仁,\r\n\r\n\r\nYour transcript is ready!\r\n=========================\r\n\r\n\r\n \r\n\r\n\r\n作業用Meet has been securely saved. Generate a meeting summary or action items in a single click. Highlight key moments, leave comments and share this meeting.\r\n\r\n\r\n[ Open the transcript](https://app.tactiq.io/?utm_source=tactiq-product&utm_medium=transcript-notification&utm_campaign=email&utm_content=transcript-notification#/transcripts/8bFUtGlKxdX4HhKz5WyD)\r\n\r\n\r\n\r\n\r\n[Rate us on Chrome Web Store](https://chromewebstore.google.com/detail/tactiq-chatgpt-meeting-su/fggkaccpbmombhnjkjokndojfgagejfb/reviews?utm_source=email&utm_medium=transcript-notification&utm_campaign=rate-us) 👈\r\n\r\n\r\nWarmest regards,\r\nThe Tactiq team\r\n\r\n\r\n**Turning meeting context into exceptional outcomes**\r\n\r\n\r\nSent with ❤️ from Tactiq\r\n\r\nLevel 33, 264 George Street, Sydney, NSW 2000, Australia\r\n\r\nQuestions? Reach out to support [here](mailto:support@tactiq.io)\r\n\r\n\r\n[View in browser](https://r.mailsib.tactiq.io/tr/mr/N2MS1sNmNOmse0HgfWA-LOI1RpMWD9qJwrfRodl8PSk6PPkmh1B-Q8g9qLsbyK0Nxm-fhzPoYQTN1xmDa9rj8atkQPic-rEqbX_zc634tZGKqG_41kEhbEUSTBMywjAzv_btQLtMZ9Bb5VHdko0HdupR8vyk3eywPXLscXYHQIqk_jpYpjzlxqtiYLimlxehsdmSfA6uMFS9HlXEcAxyAj6khfH0PJvxpedoyE2n) | [Unsubscribe](https://r.mailsib.tactiq.io/tr/un/UG_ttLq0RgGmiiaS_yz2KRaOVRnle8Wj7XlxxtP-u8zl1yi3JpRi2qKnFxxmPb1gGbxON_soHAgvwuTqqP76YzkIsXmT_fei4h8S4v4xYVVT14tu0egCZ1K__rxvcS4z_WopT_t7amhAm8dqspdVfauNru5reCbt9MSPGkI1bBMnIJ_ovaLNbpLh6_lhRVxpGLTxAHbP3UjlQs7LLBI-ZS1Bit2NMdPptA4kAe_rZS1dR-mdWlrMCmuAt2fjAeu__j4tCBjrXlKN)",
+  "projects": [
+    {
+      "id": "f57a4661-d80a-4483-bad5-129e1ae37be0",
+      "name": "スタディGO",
+      "description": null,
+      "color": "#10B981",
+      "created_at": "2025-12-25T21:33:36.432Z",
+      "updated_at": "2025-12-25T21:33:36.432Z"
+    },
+    {
+      "id": "294d7854-7318-47dd-a946-a7a28e606c69",
+      "name": "ポイ活",
+      "description": null,
+      "color": "#F97316",
+      "created_at": "2025-12-25T21:33:22.212Z",
+      "updated_at": "2025-12-25T21:33:22.212Z"
+    },
+    {
+      "id": "2727cc73-a897-4df5-923c-a2da1f379edd",
+      "name": "IPステーション",
+      "description": null,
+      "color": "#06B6D4",
+      "created_at": "2025-12-25T14:17:23.856Z",
+      "updated_at": "2025-12-25T14:17:23.856Z"
+    },
+    {
+      "id": "5ec5e71d-036e-43dd-8415-f23be1dc764b",
+      "name": "レベラボ",
+      "description": null,
+      "color": "#8B5CF6",
+      "created_at": "2025-12-25T14:16:34.286Z",
+      "updated_at": "2025-12-25T21:33:41.007Z"
+    },
+    {
+      "id": "f338a71f-683d-4916-8a72-73ff705a14ad",
+      "name": "AIエージェントチーム",
+      "description": null,
+      "color": "#3B82F6",
+      "created_at": "2025-12-25T14:16:17.780Z",
+      "updated_at": "2025-12-25T14:16:17.780Z"
+    }
+  ]
+}
+
+=== 生成されたプロンプト（バックエンドで生成されるものと同じ） ===
+以下のメッセージを分析し、最も適切なプロジェクトを選択してください。
+
+【メッセージ】
+Tactiq: 作業用Meet
+Hi 柚木仁,
+
+
+Your transcript is ready!
+=========================
+
+
+ 
+
+
+作業用Meet has been securely saved. Generate a meeting summary or action items in a single click. Highlight key moments, leave comments and share this meeting.
+
+
+[ Open the transcript](https://app.tactiq.io/?utm_source=tactiq-product&utm_medium=transcript-notification&utm_campaign=email&utm_content=transcript-notification#/transcripts/8bFUtGlKxdX4HhKz5WyD)
+
+
+
+
+[Rate us on Chrome Web Store](https://chromewebstore.google.com/detail/tactiq-chatgpt-meeting-su/fggkaccpbmombhnjkjokndojfgagejfb/reviews?utm_source=email&utm_medium=transcript-notification&utm_campaign=rate-us) 👈
+
+
+Warmest regards,
+The Tactiq team
+
+
+**Turning meeting context into exceptional outcomes**
+
+
+Sent with ❤️ from Tactiq
+
+Level 33, 264 George Street, Sydney, NSW 2000, Australia
+
+Questions? Reach out to support [here](mailto:support@tactiq.io)
+
+
+[View in browser](https://r.mailsib.tactiq.io/tr/mr/N2MS1sNmNOmse0HgfWA-LOI1RpMWD9qJwrfRodl8PSk6PPkmh1B-Q8g9qLsbyK0Nxm-fhzPoYQTN1xmDa9rj8atkQPic-rEqbX_zc634tZGKqG_41kEhbEUSTBMywjAzv_btQLtMZ9Bb5VHdko0HdupR8vyk3eywPXLscXYHQIqk_jpYpjzlxqtiYLimlxehsdmSfA6uMFS9HlXEcAxyAj6khfH0PJvxpedoyE2n) | [Unsubscribe](https://r.mailsib.tactiq.io/tr/un/UG_ttLq0RgGmiiaS_yz2KRaOVRnle8Wj7XlxxtP-u8zl1yi3JpRi2qKnFxxmPb1gGbxON_soHAgvwuTqqP76YzkIsXmT_fei4h8S4v4xYVVT14tu0egCZ1K__rxvcS4z_WopT_t7amhAm8dqspdVfauNru5reCbt9MSPGkI1bBMnIJ_ovaLNbpLh6_lhRVxpGLTxAHbP3UjlQs7LLBI-ZS1Bit2NMdPptA4kAe_rZS1dR-mdWlrMCmuAt2fjAeu__j4tCBjrXlKN)
+
+【プロジェクト候補】
+- id:f57a4661-d80a-4483-bad5-129e1ae37be0 name:スタディGO
+- id:294d7854-7318-47dd-a946-a7a28e606c69 name:ポイ活
+- id:2727cc73-a897-4df5-923c-a2da1f379edd name:IPステーション
+- id:5ec5e71d-036e-43dd-8415-f23be1dc764b name:レベラボ
+- id:f338a71f-683d-4916-8a72-73ff705a14ad name:AIエージェントチーム
+
+【出力形式】
+以下のJSON形式で出力してください（JSONのみ、他の説明は不要）：
+```json
+{
+  "projectId": "選択したプロジェクトのID（該当なしの場合はnull）",
+  "confidence": 0-100の確信度,
+  "reason": "選択理由（日本語で簡潔に）"
+}
+```
+
+【判断基準】
+1. メッセージにプロジェクト名が直接含まれている場合は高確信度（80-100）
+2. プロジェクトの説明と関連するキーワードがある場合は中確信度（50-79）
+3. 明確な関連性がない場合はnullを返す
+
+=== 画面に表示されたプロンプト ===
+以下のメッセージを分析し、最も適切なプロジェクトを選択してください。
+
+【メッセージ】
+Tactiq: 作業用Meet
+Hi 柚木仁,
+
+
+Your transcript is ready!
+=========================
+
+
+ 
+
+
+作業用Meet has been securely saved. Generate a meeting summary or action items in a single click. Highlight key moments, leave comments and share this meeting.
+
+
+[ Open the transcript](https://app.tactiq.io/?utm_source=tactiq-product&utm_medium=transcript-notification&utm_campaign=email&utm_content=transcript-notification#/transcripts/8bFUtGlKxdX4HhKz5WyD)
+
+
+
+
+[Rate us on Chrome Web Store](https://chromewebstore.google.com/detail/tactiq-chatgpt-meeting-su/fggkaccpbmombhnjkjokndojfgagejfb/reviews?utm_source=email&utm_medium=transcript-notification&utm_campaign=rate-us) 👈
+
+
+Warmest regards,
+The Tactiq team
+
+
+**Turning meeting context into exceptional outcomes**
+
+
+Sent with ❤️ from Tactiq
+
+Level 33, 264 George Street, Sydney, NSW 2000, Australia
+
+Questions? Reach out to support [here](mailto:support@tactiq.io)
+
+
+[View in browser](https://r.mailsib.tactiq.io/tr/mr/N2MS1sNmNOmse0HgfWA-LOI1RpMWD9qJwrfRodl8PSk6PPkmh1B-Q8g9qLsbyK0Nxm-fhzPoYQTN1xmDa9rj8atkQPic-rEqbX_zc634tZGKqG_41kEhbEUSTBMywjAzv_btQLtMZ9Bb5VHdko0HdupR8vyk3eywPXLscXYHQIqk_jpYpjzlxqtiYLimlxehsdmSfA6uMFS9HlXEcAxyAj6khfH0PJvxpedoyE2n) | [Unsubscribe](https://r.mailsib.tactiq.io/tr/un/UG_ttLq0RgGmiiaS_yz2KRaOVRnle8Wj7XlxxtP-u8zl1yi3JpRi2qKnFxxmPb1gGbxON_soHAgvwuTqqP76YzkIsXmT_fei4h8S4v4xYVVT14tu0egCZ1K__rxvcS4z_WopT_t7amhAm8dqspdVfauNru5reCbt9MSPGkI1bBMnIJ_ovaLNbpLh6_lhRVxpGLTxAHbP3UjlQs7LLBI-ZS1Bit2NMdPptA4kAe_rZS1dR-mdWlrMCmuAt2fjAeu__j4tCBjrXlKN)
+
+【プロジェクト候補】
+- id:f57a4661-d80a-4483-bad5-129e1ae37be0 name:スタディGO
+- id:294d7854-7318-47dd-a946-a7a28e606c69 name:ポイ活
+- id:2727cc73-a897-4df5-923c-a2da1f379edd name:IPステーション
+- id:5ec5e71d-036e-43dd-8415-f23be1dc764b name:レベラボ
+- id:f338a71f-683d-4916-8a72-73ff705a14ad name:AIエージェントチーム
+
+【出力形式】
+以下のJSON形式で出力してください（JSONのみ、他の説明は不要）：
+```json
+{
+  "projectId": "選択したプロジェクトのID（該当なしの場合はnull）",
+  "confidence": 0-100の確信度,
+  "reason": "選択理由（日本語で簡潔に）"
+}
+```
+
+【判断基準】
+1. メッセージにプロジェクト名が直接含まれている場合は高確信度（80-100）
+2. プロジェクトの説明と関連するキーワードがある場合は中確信度（50-79）
+3. 明確な関連性がない場合はnullを返す
+
+=== コンソールログ ===
+[info] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[log] AuthInitializer loaded
+[log] [Fast Refresh] rebuilding
+[log] [Fast Refresh] done in 856ms
