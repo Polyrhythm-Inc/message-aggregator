@@ -1,0 +1,37 @@
+{
+  "name": "gmail-slack-forwarder",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Gmail to Slack forwarder - polls Gmail inbox and posts to Slack",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "setup": "tsx scripts/setup-oauth.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:connection": "tsx scripts/test-connection.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@slack/web-api": "^7.0.0",
+    "better-sqlite3": "^11.0.0",
+    "googleapis": "^140.0.0",
+    "pino": "^8.0.0",
+    "yaml": "^2.4.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^20.0.0",
+    "pino-pretty": "^10.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

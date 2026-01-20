@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { WebClient } from '@slack/web-api';
 import { logger } from '@/lib/logger';
-import { SlackMessage, MessagesResponse } from '@/types/slack';
+import { SlackMessage, SlackFile, MessagesResponse } from '@/types/slack';
 import {
   getCachedUserName,
   setCachedUserNames,
@@ -13,6 +13,7 @@ import {
   setChatworkCachedUserNames,
 } from '@/lib/chatwork-user-cache';
 import { ChatworkService } from '@/lib/chatwork-service';
+import { getMessageExternalProjectAssignments } from '@/lib/db/projects';
 
 const TASK_CHANNEL_ID = 'C045XMMGDHC';
 
@@ -46,8 +47,8 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = Math.min(
-      parseInt(searchParams.get('limit') || '20', 10),
-      100
+      parseInt(searchParams.get('limit') || '200', 10),
+      200
     );
 
     const botToken = process.env.SLACK_BOT_TOKEN;
@@ -166,18 +167,37 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // 外部プロジェクト割当情報を取得
+    let externalProjectAssignments = new Map<string, string>();
+    try {
+      externalProjectAssignments = await getMessageExternalProjectAssignments();
+    } catch (error) {
+      logger.warn({ error }, 'プロジェクト割当情報の取得に失敗しました（初回起動の可能性）');
+    }
+
     // メッセージを整形
     const messages: SlackMessage[] = result.messages.map((msg) => {
       // filesにメールがあるかチェック
-      const files = msg.files as Array<{
+      const rawFiles = msg.files as Array<{
+        id?: string;
+        name?: string;
+        title?: string;
+        mimetype?: string;
         filetype?: string;
+        url_private?: string;
+        permalink?: string;
+        size?: number;
+        thumb_64?: string;
+        thumb_80?: string;
+        thumb_360?: string;
+        thumb_480?: string;
         subject?: string;
         plain_text?: string;
         from?: Array<{ address?: string; name?: string }>;
         to?: Array<{ address?: string; name?: string }>;
       }> | undefined;
 
-      const emailFile = files?.find((f) => f.filetype === 'email');
+      const emailFile = rawFiles?.find((f) => f.filetype === 'email');
       const formatEmailAddress = (entry?: { address?: string; name?: string }) => {
         if (!entry) return undefined;
         const { name, address } = entry;
@@ -193,20 +213,42 @@ export async function GET(request: NextRequest) {
           }
         : undefined;
 
+      // メール以外の添付ファイルを抽出
+      const attachedFiles: SlackFile[] = (rawFiles || [])
+        .filter((f) => f.filetype !== 'email' && f.id && f.url_private)
+        .map((f) => ({
+          id: f.id!,
+          name: f.name || f.title || 'unnamed',
+          title: f.title || f.name || 'unnamed',
+          mimetype: f.mimetype || 'application/octet-stream',
+          filetype: f.filetype || 'unknown',
+          url_private: f.url_private!,
+          permalink: f.permalink || '',
+          size: f.size,
+          thumb_64: f.thumb_64,
+          thumb_80: f.thumb_80,
+          thumb_360: f.thumb_360,
+          thumb_480: f.thumb_480,
+        }));
+
       // メッセージ本文内のメンションをユーザー名に置換
       let resolvedText = resolveMentions(msg.text || '', userMap);
 
       // Chatworkメッセージ内のAccount IDを名前に置換
       resolvedText = resolveChatworkAccountName(resolvedText, chatworkUserMap);
 
+      const messageTs = msg.ts || '';
       return {
-        ts: msg.ts || '',
+        ts: messageTs,
         text: resolvedText,
         user: msg.user,
         userName: msg.user ? userMap.get(msg.user) : undefined,
         subtype: msg.subtype,
         bot_id: msg.bot_id,
+        blocks: msg.blocks as SlackMessage['blocks'],
         email,
+        files: attachedFiles.length > 0 ? attachedFiles : undefined,
+        external_project_id: externalProjectAssignments.get(messageTs) || null,
       };
     });
 
@@ -234,11 +276,12 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const body = await request.json();
-    const { ts } = body;
+    const { ts, tsArray } = body;
 
-    if (!ts) {
+    // 単一削除または一括削除のいずれかが必要
+    if (!ts && (!tsArray || !Array.isArray(tsArray) || tsArray.length === 0)) {
       return NextResponse.json(
-        { error: 'タイムスタンプ(ts)が必要です' },
+        { error: 'タイムスタンプ(ts)またはタイムスタンプ配列(tsArray)が必要です' },
         { status: 400 }
       );
     }
@@ -254,6 +297,55 @@ export async function DELETE(request: NextRequest) {
 
     const client = new WebClient(userToken);
 
+    // 一括削除の場合
+    if (tsArray && Array.isArray(tsArray) && tsArray.length > 0) {
+      const results: { ts: string; success: boolean; error?: string }[] = [];
+
+      // Slackのレート制限対策：2秒間隔で順次削除
+      const RATE_LIMIT_DELAY_MS = 2000;
+
+      for (let i = 0; i < tsArray.length; i++) {
+        const messageTs = tsArray[i];
+
+        // 2件目以降は2秒待機
+        if (i > 0) {
+          await new Promise((resolve) => setTimeout(resolve, RATE_LIMIT_DELAY_MS));
+        }
+
+        try {
+          await client.chat.delete({
+            channel: TASK_CHANNEL_ID,
+            ts: messageTs,
+          });
+          results.push({ ts: messageTs, success: true });
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          let errorType = 'unknown';
+          if (errorMessage.includes('cant_delete_message')) {
+            errorType = 'permission_denied';
+          } else if (errorMessage.includes('message_not_found')) {
+            errorType = 'not_found';
+          }
+          results.push({ ts: messageTs, success: false, error: errorType });
+        }
+      }
+
+      const successCount = results.filter((r) => r.success).length;
+      const failureCount = results.filter((r) => !r.success).length;
+
+      logger.info(
+        { channel: TASK_CHANNEL_ID, total: tsArray.length, success: successCount, failure: failureCount },
+        'Slackメッセージを一括削除しました'
+      );
+
+      return NextResponse.json({
+        success: failureCount === 0,
+        results,
+        summary: { total: tsArray.length, success: successCount, failure: failureCount },
+      });
+    }
+
+    // 単一削除の場合（従来の動作）
     await client.chat.delete({
       channel: TASK_CHANNEL_ID,
       ts,

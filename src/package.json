@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack -p 5100",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -25,10 +28,13 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "unidiff": "^1.0.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "pino-pretty": "^10.0.0"
+    "@playwright/test": "^1.57.0",
+    "pino-pretty": "^10.0.0",
+    "playwright": "^1.57.0"
   }
 }

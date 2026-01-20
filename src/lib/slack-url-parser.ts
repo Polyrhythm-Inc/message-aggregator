@@ -90,3 +90,59 @@ export function extractSlackUrlInfo(text: string): SlackUrlInfo | null {
   }
   return parseSlackUrl(url);
 }
+
+/**
+ * Slack URLからメッセージID（p + タイムスタンプ形式）を抽出
+ * 例: https://polyrhythm.slack.com/archives/C09H0CHTCT0/p1768488343076159 → p1768488343076159
+ * 例: https://polyrhythm.slack.com/archives/C09H0CHTCT0/p1768488343076159?thread_ts=... → p1768488343076159
+ */
+export function extractSlackMessageId(url: string): string | null {
+  const pattern = /\/p(\d+)(?:\?|$)/;
+  const match = url.match(pattern);
+  if (!match) {
+    return null;
+  }
+  return `p${match[1]}`;
+}
+
+/**
+ * メッセージ本文からSlackメッセージIDを抽出
+ * URLが複数ある場合は最初に見つかったものを返す
+ */
+export function extractSlackMessageIdFromText(text: string): string | null {
+  const url = extractSlackUrl(text);
+  if (!url) {
+    return null;
+  }
+  return extractSlackMessageId(url);
+}
+
+/**
+ * メッセージ本文に特定のSlackメッセージIDを含むURLがあるかどうかを判定
+ * URLのクエリパラメータ等を無視してメッセージIDのみで比較
+ */
+export function hasSlackMessageId(text: string, messageId: string): boolean {
+  // すべてのSlack URLを抽出してチェック
+  // Slack形式 <https://...> からURLを抽出
+  const slackLinkPattern = /<(https:\/\/[^.]+\.slack\.com\/archives\/[^|>]+)(?:\|[^>]+)?>/g;
+  let match;
+  while ((match = slackLinkPattern.exec(text)) !== null) {
+    const url = match[1];
+    const extractedId = extractSlackMessageId(url);
+    if (extractedId === messageId) {
+      return true;
+    }
+  }
+
+  // 通常のURL形式もチェック
+  const urlPattern = /(https:\/\/[^.\s]+\.slack\.com\/archives\/[^\s]+)/g;
+  while ((match = urlPattern.exec(text)) !== null) {
+    const url = match[0];
+    const extractedId = extractSlackMessageId(url);
+    if (extractedId === messageId) {
+      return true;
+    }
+  }
+
+  return false;
+}

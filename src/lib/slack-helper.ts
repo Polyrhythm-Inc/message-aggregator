@@ -1,19 +1,24 @@
-import { SlackWebhook } from '../types/slack';
+import { SlackWebhook, isReactionEvent } from '../types/slack';
 
 export const SlackHelper = {
   // Slackウェブフックからテキストを抽出
   textInWebhook: (webhook: SlackWebhook): string => {
     const { event } = webhook;
-    
+
+    // リアクションイベントの場合はテキストがないので空文字を返す
+    if (isReactionEvent(event)) {
+      return '';
+    }
+
     // メッセージのテキストを取得
     if (event.text) {
       return event.text;
     }
-    
+
     // ブロックからテキストを抽出
     if (event.blocks) {
-      const blockTexts = event.blocks.flatMap(block => 
-        block.elements?.flatMap(element => 
+      const blockTexts = event.blocks.flatMap(block =>
+        block.elements?.flatMap(element =>
           element.elements?.map(el => el.text).filter(Boolean)
         ) || []
       );
@@ -21,17 +26,17 @@ export const SlackHelper = {
         return blockTexts.join(' ');
       }
     }
-    
+
     // 添付ファイルからテキストを抽出
     if (event.attachments) {
-      const attachmentTexts = event.attachments.map(attachment => 
+      const attachmentTexts = event.attachments.map(attachment =>
         attachment.text || attachment.fallback
       ).filter(Boolean);
       if (attachmentTexts.length > 0) {
         return attachmentTexts.join(' ');
       }
     }
-    
+
     return '';
   },
   

@@ -12,7 +12,7 @@ mkdir -p "$LOG_DIR"
 
 # 5100ポートで起動しているプロセスを停止
 echo "$(date): Checking for processes on port $PORT..." >> "$LOG_DIR/startup.log"
-PID=$(lsof -ti :$PORT)
+PID=$(/usr/sbin/lsof -ti :$PORT)
 if [ -n "$PID" ]; then
     echo "$(date): Killing process $PID on port $PORT" >> "$LOG_DIR/startup.log"
     kill -9 $PID 2>/dev/null
@@ -37,4 +37,12 @@ fi
 # アプリケーションを起動（ポート5100で）
 echo "$(date): Starting Message Aggregator on port $PORT..." >> "$LOG_DIR/startup.log"
 cd "$PROJECT_DIR/src"
+
+# .env.localから環境変数を読み込む
+if [ -f .env.local ]; then
+    echo "$(date): Loading .env.local..." >> "$LOG_DIR/startup.log"
+    export $(grep -v '^#' .env.local | xargs)
+    echo "$(date): DATABASE_URL=${DATABASE_URL:0:50}..." >> "$LOG_DIR/startup.log"
+fi
+
 exec npx next start -p $PORT >> "$LOG_DIR/app.log" 2>&1

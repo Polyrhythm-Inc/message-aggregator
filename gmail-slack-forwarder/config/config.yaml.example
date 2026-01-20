@@ -1,0 +1,44 @@
+# Gmail → Slack Forwarder Configuration
+
+# Polling settings
+poll_interval_seconds: 30        # Polling interval (seconds)
+max_messages_per_poll: 20        # Max messages to process per poll
+gmail_query: "in:inbox -label:slack_done"  # Gmail search query
+
+# OAuth credentials path
+credentials_path: "~/.gmail-slack-forwarder/credentials.json"
+
+# Slack settings
+slack:
+  bot_token_env: "SLACK_BOT_TOKEN"  # Environment variable name
+  post_channel_id: "C0123456789"     # Channel ID to post to
+
+# Gmail accounts
+accounts:
+  - name: "accountA"
+    display_name: "accountA@gmail.com"
+    token_path: "~/.gmail-slack-forwarder/tokens/accountA.token.json"
+
+  - name: "accountB"
+    display_name: "accountB@gmail.com"
+    token_path: "~/.gmail-slack-forwarder/tokens/accountB.token.json"
+
+  # - name: "support"
+  #   display_name: "support@yourdomain.com"
+  #   token_path: "~/.gmail-slack-forwarder/tokens/support.token.json"
+
+# Post format settings
+format:
+  include_account_header: true      # Show account name in header
+  body_max_chars: 4000              # Max body length
+  split_long_body_into_thread: true # Split long body into thread
+  include_gmail_permalink: false    # Include Gmail link
+
+# Attachment settings
+attachments:
+  enabled: true                     # Enable attachment forwarding
+  upload_as_thread_reply: true      # Upload as thread reply
+
+# Deduplication settings
+dedupe:
+  sqlite_path: "~/.gmail-slack-forwarder/state.db"

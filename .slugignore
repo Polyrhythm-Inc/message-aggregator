@@ -1,0 +1,25 @@
+# Heroku slug size optimization
+# Exclude files not needed in production
+
+# Reports and screenshots
+reports/
+src/reports/
+src/screenshots/
+
+# E2E test files (not needed in production)
+src/e2e/
+src/test-results/
+test-results/
+src/playwright-report/
+src/playwright.config.ts
+
+# Development scripts
+scripts/
+src/scripts/
+
+# Documentation
+docs/
+
+# Debug files
+src/debug-*.png
+*.spec.ts

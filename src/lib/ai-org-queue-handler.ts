@@ -1,5 +1,5 @@
 import { WebClient } from '@slack/web-api';
-import { SlackWebhook } from '../types/slack';
+import { SlackWebhook, SlackEvent, isMessageEvent } from '../types/slack';
 import { SlackHelper } from './slack-helper';
 import { addToQueue, initializeQueueTable } from './db/queue';
 import { logger } from './logger';
@@ -16,7 +16,12 @@ export async function handleAiOrgMention(slackWebhook: SlackWebhook): Promise<bo
     return false;
   }
 
-  const event = slackWebhook.event;
+  // リアクションイベントは処理対象外
+  if (!isMessageEvent(slackWebhook.event)) {
+    return false;
+  }
+
+  const event = slackWebhook.event as SlackEvent;
   const isAppMention = event.type === 'app_mention';
   const isMessage = event.type === 'message';
 
@@ -104,7 +109,7 @@ function cleanMentionText(text: string, botUserId: string): string {
  */
 async function addProcessingReaction(
   slackWebhook: SlackWebhook,
-  event: SlackWebhook['event']
+  event: SlackEvent
 ): Promise<void> {
   const botToken = process.env.SLACK_BOT_TOKEN;
   if (!botToken || !event.ts) {
@@ -112,7 +117,7 @@ async function addProcessingReaction(
   }
 
   const teamId =
-    slackWebhook.event.team ||
+    event.team ||
     slackWebhook.team_id ||
     slackWebhook.context_team_id ||
     undefined;

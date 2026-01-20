@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-12-27T09:30:20.700Z",
+  "url": "https://msg-agg-poly.au.ngrok.io/",
+  "results": [
+    {
+      "step": "ページアクセス",
+      "status": "success",
+      "message": "ngrok URLに正常にアクセス"
+    },
+    {
+      "step": "ボタン探索",
+      "status": "success",
+      "message": "21個の自動設定ボタンを発見"
+    },
+    {
+      "step": "クリック前スクリーンショット",
+      "status": "success",
+      "message": "ボタンクリック前の画面を撮影",
+      "screenshotPath": "/Users/yunoki/Dropbox/project/message-aggregator/src/message-aggregator/reports/qa-01-before-click-2025-12-27T09-29-11.png"
+    },
+    {
+      "step": "ボタンクリック",
+      "status": "success",
+      "message": "自動設定ボタンをクリック (ローディング: false)"
+    },
+    {
+      "step": "モーダル表示",
+      "status": "failure",
+      "message": "モーダルが60秒以内に表示されませんでした",
+      "screenshotPath": "/Users/yunoki/Dropbox/project/message-aggregator/src/message-aggregator/reports/qa-02-modal-visible-2025-12-27T09-29-11.png"
+    },
+    {
+      "step": "エラー",
+      "status": "failure",
+      "message": "エラー: モーダルが表示されませんでした",
+      "screenshotPath": "/Users/yunoki/Dropbox/project/message-aggregator/src/message-aggregator/reports/qa-error-2025-12-27T09-29-11.png"
+    }
+  ],
+  "summary": {
+    "success": 4,
+    "failure": 2,
+    "warning": 0
+  }
+}

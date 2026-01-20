@@ -1,3 +1,17 @@
+// リアクションイベント用の型定義
+export type SlackReactionEvent = {
+  type: 'reaction_added' | 'reaction_removed';
+  user: string;
+  reaction: string; // 絵文字名（':'なし）
+  item_user?: string; // リアクションされたメッセージの投稿者
+  item: {
+    type: 'message';
+    channel: string;
+    ts: string;
+  };
+  event_ts: string;
+};
+
 export type SlackEvent = {
   client_msg_id?: string;
   type: string;
@@ -75,7 +89,7 @@ export type SlackWebhook = {
   context_team_id: string;
   context_enterprise_id: string | null;
   api_app_id: string;
-  event: SlackEvent;
+  event: SlackEvent | SlackReactionEvent;
   type: string;
   challenge?: string;
   event_id: string;
@@ -91,12 +105,54 @@ export type SlackWebhook = {
   event_context: string;
 };
 
+// 型ガード関数
+export function isReactionEvent(event: SlackEvent | SlackReactionEvent): event is SlackReactionEvent {
+  return event.type === 'reaction_added' || event.type === 'reaction_removed';
+}
+
+export function isMessageEvent(event: SlackEvent | SlackReactionEvent): event is SlackEvent {
+  return !isReactionEvent(event);
+}
+
 // メール添付ファイル用の型
 export type SlackEmailFile = {
   filetype: string;
   subject?: string;
   plain_text?: string;
   from?: { address: string; name: string }[];
+};
+
+// Block要素の型定義（詳細）
+export type SlackBlock = {
+  type: string;
+  block_id?: string;
+  text?: {
+    type: string;
+    text: string;
+    emoji?: boolean;
+    verbatim?: boolean;
+  };
+  elements?: Array<{
+    type: string;
+    text?: string;
+    verbatim?: boolean;
+  }>;
+};
+
+// 添付ファイルの型定義
+export type SlackFile = {
+  id: string;
+  name: string;
+  title: string;
+  mimetype: string;
+  filetype: string;
+  url_private: string;
+  permalink: string;
+  size?: number;
+  thumb_64?: string;
+  thumb_80?: string;
+  thumb_360?: string;
+  thumb_480?: string;
 };
 
 // メッセージ一覧表示用の型
@@ -107,12 +163,15 @@ export type SlackMessage = {
   userName?: string;
   subtype?: string;
   bot_id?: string;
+  blocks?: SlackBlock[];
   email?: {
     subject: string;
     body: string;
     from: string;
     to?: string;
   };
+  files?: SlackFile[];
+  external_project_id?: string | null;
 };
 
 export type MessagesResponse = {
@@ -133,4 +192,17 @@ export type SlackReplyResponse = {
   success: boolean;
   error?: string;
   messageTs?: string;
+};
+
+// Slackリアクションリクエストの型
+export type SlackReactionRequest = {
+  channelId: string;
+  messageTs: string;
+  name: string; // 絵文字名（':'なし。例: 'thumbsup', 'heart'）
+};
+
+// Slackリアクションレスポンスの型
+export type SlackReactionResponse = {
+  success: boolean;
+  error?: string;
 }; 

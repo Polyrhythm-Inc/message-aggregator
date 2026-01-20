@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { WebClient, WebAPICallError } from '@slack/web-api';
-import { SlackWebhook } from '../../../../types/slack';
+import { SlackWebhook, SlackEvent, isReactionEvent, isMessageEvent } from '../../../../types/slack';
 import { SlackHelper } from '../../../../lib/slack-helper';
 import { logger } from '../../../../lib/logger';
 import {
@@ -29,19 +29,30 @@ export async function POST(request: NextRequest) {
 
     // イベントの場合は外部Slackハンドラーで処理
     if (slackWebhook.type === 'event_callback') {
-      await ExternalSlackWebhookHandler.handleWebhook(slackWebhook);
-      logger.info('Slackイベントを正常に処理しました');
+      // リアクションイベントの場合
+      if (isReactionEvent(slackWebhook.event)) {
+        if (slackWebhook.event.type === 'reaction_added') {
+          await ExternalSlackWebhookHandler.handleReactionAdded(slackWebhook);
+          logger.info('Slackリアクションイベントを正常に処理しました');
+        } else {
+          logger.debug('reaction_removedイベントはスキップします');
+        }
+      } else {
+        // メッセージイベントの場合
+        await ExternalSlackWebhookHandler.handleWebhook(slackWebhook);
+        logger.info('Slackメッセージイベントを正常に処理しました');
 
-      // ai-orgボットへのメンションをQueue処理（非同期）
-      handleAiOrgMention(slackWebhook).catch((error) => {
-        logger.error(
-          {
-            errorMessage: error instanceof Error ? error.message : String(error),
-            stack: error instanceof Error ? error.stack : undefined,
-          },
-          'ai-org Queue処理でエラーが発生しました'
-        );
-      });
+        // ai-orgボットへのメンションをQueue処理（非同期）
+        handleAiOrgMention(slackWebhook).catch((error) => {
+          logger.error(
+            {
+              errorMessage: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            },
+            'ai-org Queue処理でエラーが発生しました'
+          );
+        });
+      }
 
       // processSlackEvent(slackWebhook).catch((error) => {
       //   logger.error(
@@ -73,7 +84,14 @@ export async function GET() {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
   logger.debug({ slackWebhook }, 'processSlackEvent');
-  const event = slackWebhook.event;
+
+  // リアクションイベントは処理対象外
+  if (!isMessageEvent(slackWebhook.event)) {
+    logger.debug('リアクションイベントはprocessSlackEventでは処理しません');
+    return;
+  }
+
+  const event = slackWebhook.event as SlackEvent;
 
   const botToken = process.env.SLACK_BOT_TOKEN;
   if (!botToken) {
@@ -84,7 +102,7 @@ async function processSlackEvent(slackWebhook: SlackWebhook): Promise<void> {
     slackWebhook.authorizations?.find((auth) => auth.is_bot)?.user_id ||
     process.env.SLACK_BOT_USER_ID;
   const teamId =
-    slackWebhook.event.team ||
+    event.team ||
     slackWebhook.team_id ||
     slackWebhook.context_team_id ||
     undefined;
@@ -326,7 +344,7 @@ async function notifyTaskCreationSuccess({
   taskUrl,
 }: {
   slackClient: WebClient;
-  event: SlackWebhook['event'];
+  event: SlackEvent;
   title: string;
   taskUrl?: string;
 }): Promise<void> {
@@ -370,7 +388,7 @@ async function handleTaskCreationFailure({
   permalink,
 }: {
   slackClient: WebClient;
-  event: SlackWebhook['event'];
+  event: SlackEvent;
   error: string;
   cleanedText: string;
   permalink?: string;
@@ -440,7 +458,7 @@ async function sendErrorAlert({
 }: {
   message: string;
   error: string;
-  event: SlackWebhook['event'];
+  event: SlackEvent;
   cleanedText: string;
   permalink?: string;
 }): Promise<void> {

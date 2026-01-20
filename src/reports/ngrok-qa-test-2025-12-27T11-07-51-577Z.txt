@@ -1,0 +1,9 @@
+=== QA E2Eテスト: ngrok経由 自動設定ボタン動作確認 ===
+開始時刻: 2025/12/27 20:07:51
+対象URL: https://msg-agg-poly.au.ngrok.io/
+
+1. ページにアクセス中...
+
+❌ エラー: TimeoutError: page.goto: Timeout 30000ms exceeded.
+Call log:
+  - navigating to "https://msg-agg-poly.au.ngrok.io/", waiting until "load"
